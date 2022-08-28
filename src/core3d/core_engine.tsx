@@ -101,7 +101,7 @@ class CoreEngine {
         waterMesh.rotation.y = MathUtils.degToRad(180)
         this.scene.add(waterMesh)
 
-        const grid: GridHelper = new GridHelper(5000, 100, "0xbbbbbb", "0xbbbbb")
+        const grid: GridHelper = new GridHelper(5000, 100, 0xffffff, 0xffffff)
         grid.position.x = grid.position.y = 2500
         //grid.rotation.y = MathUtils.degToRad(180)
         grid.rotation.x = MathUtils.degToRad(90)
