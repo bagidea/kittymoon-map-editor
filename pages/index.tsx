@@ -16,7 +16,7 @@ const Index = () => {
     const frame: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const game: CoreEngine = new CoreEngine(canvas.current)
+        const game: CoreEngine = new CoreEngine(canvas.current, frame.current)
         game.init()
         game.create()
         game.input()

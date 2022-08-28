@@ -17,6 +17,7 @@ import {
 
 class CoreEngine {
     private canvas: HTMLCanvasElement
+    private frame: HTMLDivElement
 
     private renderer: WebGLRenderer
     private scene: Scene
@@ -37,8 +38,9 @@ class CoreEngine {
 
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         this.canvas = canvas
+        this.frame = frame
     }
 
     windowResize = () => {
