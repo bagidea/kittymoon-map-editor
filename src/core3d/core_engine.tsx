@@ -47,6 +47,9 @@ class CoreEngine {
         const w: number = window.innerWidth
         const h: number = window.innerHeight
 
+        this.frame.style.width = (w / 5000 * 200)+"px";
+        this.frame.style.height = (h / 5000 * 200)+"px";
+
         this.camera.left = -w / 2
         this.camera.right = w / 2
         this.camera.top = -h / 2
@@ -59,6 +62,9 @@ class CoreEngine {
     init() {
         const w: number = window.innerWidth
         const h: number = window.innerHeight
+
+        this.frame.style.width = (w / 5000 * 200)+"px";
+        this.frame.style.height = (h / 5000 * 200)+"px";
 
         this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas })
         this.renderer.setSize(w, h)
@@ -227,7 +233,6 @@ class CoreEngine {
         }
     }
 
-
     input() {
         this.keyPress.set("ArrowUp", false)
         this.keyPress.set("ArrowDown", false)
@@ -236,6 +241,33 @@ class CoreEngine {
 
         window.addEventListener('keydown', this.keydown)
         window.addEventListener('keyup', this.keyup)
+    }
+
+    controls(tmr: number) {
+        const moveSpd: number = (this.keyPress.get("Shift") ? 1000 : 400)
+
+        if(this.keyPress.get("ArrowUp")) this.camera.position.y -= tmr * moveSpd
+        if(this.keyPress.get("ArrowDown")) this.camera.position.y += tmr * moveSpd
+        if(this.keyPress.get("ArrowLeft")) this.camera.position.x -= tmr * moveSpd
+        if(this.keyPress.get("ArrowRight")) this.camera.position.x += tmr * moveSpd
+    }
+
+    cameraAndFrameUpdate(w: number, h: number) {
+        this.camera.position.x = this.camera.position.x < w / 2 ?
+                                    w / 2 :
+                                    this.camera.position.x > 5000 - (w / 2) ?
+                                        5000 - (w / 2) :
+                                        this.camera.position.x
+
+        this.camera.position.y = this.camera.position.y < h / 2 ?
+                                    h / 2 :
+                                    this.camera.position.y > 5000 - (h / 2) ?
+                                        5000 - (h / 2) :
+                                        this.camera.position.y
+        //console.log(this.camera.position.x+" : "+(-w / 2))
+
+        this.frame.style.left = ((this.camera.position.x - w / 2) / 5000 * 186)+"px" // sub border 10px + 3px
+        this.frame.style.top = ((this.camera.position.y - h / 2) / 5000 * 189)+"px" // sub border 10px + 1px
     }
 
     render = () => {
@@ -254,25 +286,8 @@ class CoreEngine {
         this.water.offset.x = (this.water.offset.x + tmr * 0.5) % 1
         //this.camera.position.y += tmr * 50
 
-        const moveSpd: number = (this.keyPress.get("Shift") ? 1000 : 400)
-
-        if(this.keyPress.get("ArrowUp")) this.camera.position.y -= tmr * moveSpd
-        if(this.keyPress.get("ArrowDown")) this.camera.position.y += tmr * moveSpd
-        if(this.keyPress.get("ArrowLeft")) this.camera.position.x -= tmr * moveSpd
-        if(this.keyPress.get("ArrowRight")) this.camera.position.x += tmr * moveSpd
-
-        this.camera.position.x = this.camera.position.x < w / 2 ?
-                                    w / 2 :
-                                    this.camera.position.x > 5000 - (w / 2) ?
-                                        5000 - (w / 2) :
-                                        this.camera.position.x
-
-        this.camera.position.y = this.camera.position.y < h / 2 ?
-                                    h / 2 :
-                                    this.camera.position.y > 5000 - (h / 2) ?
-                                        5000 - (h / 2) :
-                                        this.camera.position.y
-        //console.log(this.camera.position.x+" : "+(-w / 2))
+        this.controls(tmr)
+        this.cameraAndFrameUpdate(w, h)
 
         this.renderer.render(this.scene, this.camera)
     }

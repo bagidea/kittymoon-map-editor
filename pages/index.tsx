@@ -34,6 +34,7 @@ const Index = () => {
                 position="absolute"
                 w="200px"
                 h="200px"
+                padding="0px"
                 left="30px"
                 bottom="30px"
                 border="5px dashed"
@@ -41,9 +42,10 @@ const Index = () => {
             >
                 <Box
                     ref={ frame }
-                    w="50px"
-                    h="50px"
-                    border="5px solid"
+                    position="absolute"
+                    //w="50px"
+                    //h="50px"
+                    border="3px solid"
                     borderColor="white"
                 />
             </Flex>
