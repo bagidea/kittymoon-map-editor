@@ -12,8 +12,18 @@ import {
     TextureLoader,
     WebGLRenderer,
     GridHelper,
-    InstancedMesh
+    InstancedMesh,
+    Vector3,
+    Euler
 } from "three"
+
+interface MapTilesetData {
+    index: number,
+    position: Vector3,
+    rotation: Euler,
+    scale: Vector3,
+    tile_index: number
+}
 
 class CoreEngine {
     private canvas: HTMLCanvasElement
@@ -35,6 +45,7 @@ class CoreEngine {
     //private tilesets: MeshBasicMaterial[] = []
 
     private tilesets: Map<string, InstancedMesh> = new Map<string, InstancedMesh>()
+    private mapTilesets: Map<string, MapTilesetData> = new Map<string, MapTilesetData>()
 
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
 
@@ -71,9 +82,10 @@ class CoreEngine {
 
         this.scene = new Scene()
 
-        this.camera = new OrthographicCamera(-w / 2, w / 2, -h / 2, h / 2, 1, 100)
+        this.camera = new OrthographicCamera(-w / 2, w / 2, -h / 2, h / 2, 1, 110)
         //this.camera.position.set(0, 0, 5)
-        this.camera.position.set(w / 2, h / 2, 5)
+        //this.camera.position.set(w / 2, h / 2, 5)
+        this.camera.position.set(2500, 2500, 100)
 
         window.addEventListener('resize', this.windowResize)
 
@@ -116,6 +128,29 @@ class CoreEngine {
         this.scene.add(grid)
 
         const hillTex: Texture = this.texLoader.load("/tilesets/Hills.png")
+        const hillGeo: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
+        const hillMat: MeshBasicMaterial = new MeshBasicMaterial({ color: 0xffffff, map: hillTex })
+        const hillMesh: InstancedMesh = new InstancedMesh(hillGeo, hillMat, 10000)
+        this.tilesets.set("hill", hillMesh)
+
+        let inx: number = 0
+
+        for(let r: number = 0; r < 100; r++) {
+            for(let c: number = 0; c < 100; c++) {
+                this.mapTilesets.set(
+                    "block_"+c+"_"+r,
+                    {
+                        index: inx,
+                        position: new Vector3(),
+                        rotation: new Euler(),
+                        scale: new Vector3(),
+                        tile_index: 0
+                    }
+                )
+
+                inx++
+            }
+        }
 
         /*const gridGeometry: PlaneGeometry = new PlaneGeometry(5000, 5000, 100, 100)
         const gridMaterial: MeshStandardMaterial = new MeshStandardMaterial({ wireframe: true, opacity: 0.1, transparent: true })
@@ -266,7 +301,7 @@ class CoreEngine {
                                         this.camera.position.y
         //console.log(this.camera.position.x+" : "+(-w / 2))
 
-        this.frame.style.left = ((this.camera.position.x - w / 2) / 5000 * 186)+"px" // sub border 10px + 3px
+        this.frame.style.left = ((this.camera.position.x - w / 2) / 5000 * 189)+"px" // sub border 10px + 1px
         this.frame.style.top = ((this.camera.position.y - h / 2) / 5000 * 189)+"px" // sub border 10px + 1px
     }
 
