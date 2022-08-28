@@ -32,18 +32,18 @@ const Index = () => {
 
             <Flex
                 position="absolute"
-                w="250px"
-                h="250px"
-                left="50px"
-                bottom="50px"
-                border="3px dashed"
+                w="200px"
+                h="200px"
+                left="30px"
+                bottom="30px"
+                border="5px dashed"
                 borderColor="white"
             >
                 <Box
                     ref={ frame }
                     w="50px"
                     h="50px"
-                    border="3px solid"
+                    border="5px solid"
                     borderColor="white"
                 />
             </Flex>
