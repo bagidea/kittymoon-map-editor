@@ -22,7 +22,8 @@ interface MapTilesetData {
     position: Vector3,
     rotation: Euler,
     scale: Vector3,
-    tile_index: number
+    tile_index: number,
+    is_walk: boolean
 }
 
 class CoreEngine {
@@ -144,7 +145,8 @@ class CoreEngine {
                         position: new Vector3(),
                         rotation: new Euler(),
                         scale: new Vector3(),
-                        tile_index: 0
+                        tile_index: -1,
+                        is_walk: false
                     }
                 )
 
