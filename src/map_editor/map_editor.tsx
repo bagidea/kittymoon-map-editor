@@ -23,7 +23,10 @@ class MapEditor extends CoreEngine {
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
     private pointer: Vector2
 
-    private textPosition: CSS2DRenderer
+    private css2dRenderer: CSS2DRenderer
+    private text_pos: HTMLDivElement
+    private textPosition: CSS2DObject
+
     private grid: GridHelper
     private water: Texture
 
@@ -40,7 +43,7 @@ class MapEditor extends CoreEngine {
         this.frame.style.width = (w / 5000 * 200)+"px";
         this.frame.style.height = (h / 5000 * 200)+"px";
 
-        this.textPosition.setSize(w, h)
+        this.css2dRenderer.setSize(w, h)
     }
 
     onPointerMove = (e: PointerEvent) => {
@@ -48,9 +51,38 @@ class MapEditor extends CoreEngine {
         const y: number = e.clientY
         const w: number = window.innerWidth
         const h: number = window.innerHeight
+        const px: number = ((this.getCamera().position.x - w / 2) + x)
+        const py: number = ((this.getCamera().position.y - h / 2) + y)
 
-        this.pointer.x = Math.floor(((this.getCamera().position.x - w / 2) + x) / 50)
-        this.pointer.y = Math.floor(((this.getCamera().position.y - h / 2) + y) / 50)
+        this.pointer.x = Math.floor(px / 50)
+        this.pointer.y = Math.floor(py / 50)
+
+        this.textPosition.visible = true
+        this.text_pos.textContent = "X: "+this.pointer.x+", Y: "+this.pointer.y
+        this.textPosition.position.set(px, py + 40, 0)
+    }
+
+    css2dSetup() {
+        const w: number = window.innerWidth
+        const h: number = window.innerHeight
+
+        this.text_pos = document.createElement('div')
+        this.text_pos.style.fontSize = "14px"
+        this.text_pos.style.fontWeight = "600"
+        this.text_pos.textContent = "X: 0, Y: 0"
+
+        this.textPosition = new CSS2DObject(this.text_pos)
+        this.textPosition.visible = false
+
+        this.getScene().add(this.textPosition)
+
+        this.css2dRenderer = new CSS2DRenderer()
+        this.css2dRenderer.setSize(w, h)
+        this.css2dRenderer.domElement.style.position = "absolute"
+        this.css2dRenderer.domElement.style.top = "0px"
+        this.css2dRenderer.domElement.style.left = "0px"
+
+        document.body.appendChild(this.css2dRenderer.domElement)
     }
 
     setup() {
@@ -64,14 +96,6 @@ class MapEditor extends CoreEngine {
 
         this.pointer = new Vector2()
 
-        this.textPosition = new CSS2DRenderer()
-        this.textPosition.setSize(w, h)
-        this.textPosition.domElement.style.position = "absolute"
-        this.textPosition.domElement.style.top = "0px"
-        this.textPosition.domElement.style.left = "0px"
-
-        document.body.appendChild(this.textPosition.domElement)
-
         this.grid = new GridHelper(5000, 100, 0xffffff, 0xffffff)
         this.grid.position.x = this.grid.position.y = 2500
         this.grid.rotation.x = MathUtils.degToRad(90)
@@ -81,6 +105,7 @@ class MapEditor extends CoreEngine {
         window.addEventListener("resize", this.onWindowResize)
         window.addEventListener("pointermove", this.onPointerMove)
 
+        this.css2dSetup()
         this.setUpdateFunction(this.loop)
         this.setAfterUpdateFunction(this.afterRender)
     }
@@ -161,13 +186,19 @@ class MapEditor extends CoreEngine {
 
     controls(tmr: number) {
         const moveSpd: number = (this.keyPress.get("Shift") ? 1000 : 400)
-
         const camera: OrthographicCamera = this.getCamera()
 
-        if(this.keyPress.get("ArrowUp")) camera.position.y -= tmr * moveSpd
-        if(this.keyPress.get("ArrowDown")) camera.position.y += tmr * moveSpd
-        if(this.keyPress.get("ArrowLeft")) camera.position.x -= tmr * moveSpd
-        if(this.keyPress.get("ArrowRight")) camera.position.x += tmr * moveSpd
+        const ku: boolean = this.keyPress.get("ArrowUp")
+        const kd: boolean = this.keyPress.get("ArrowDown")
+        const kl: boolean = this.keyPress.get("ArrowLeft")
+        const kr: boolean = this.keyPress.get("ArrowRight")
+
+        if(ku) camera.position.y -= tmr * moveSpd
+        if(kd) camera.position.y += tmr * moveSpd
+        if(kl) camera.position.x -= tmr * moveSpd
+        if(kr) camera.position.x += tmr * moveSpd
+
+        this.textPosition.visible = this.textPosition.visible && (ku || kd || kl || kr) ? false : this.textPosition.visible
     }
 
     cameraAndFrameUpdate(w: number, h: number) {
@@ -201,7 +232,7 @@ class MapEditor extends CoreEngine {
     }
 
     afterRender(deltaTime: number) {
-        this.textPosition.render(this.getScene(), this.getCamera())
+        this.css2dRenderer.render(this.getScene(), this.getCamera())
     }
 }
 
