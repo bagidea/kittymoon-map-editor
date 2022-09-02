@@ -18,6 +18,7 @@ class CoreEngine {
     private clock: Clock
 
     private update: (deltaTime: number) => void
+    private after_update: (deltaTime: number) => void
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
@@ -67,9 +68,11 @@ class CoreEngine {
         requestAnimationFrame(this.render)
         if(!!this.update) this.update(this.clock.getDelta())
         this.renderer.render(this.scene, this.camera)
+        if(!!this.after_update) this.after_update(this.clock.getDelta())
     }
 
     setUpdateFunction(updateFunction: (deltaTime: number) => void) { this.update = updateFunction }
+    setAfterUpdateFunction(afterUpdateFunction: (deltaTime: number) => void) { this.after_update = afterUpdateFunction }
 
     getScene(): Scene { return this.scene }
     getCamera(): OrthographicCamera { return this.camera }

@@ -9,15 +9,22 @@ import {
     RepeatWrapping,
     Texture,
     Vector2
-} from "three";
+} from "three"
 
-import CoreEngine from "../core3d/core_engine";
+import {
+    CSS2DRenderer,
+    CSS2DObject
+} from "three/examples/jsm/renderers/CSS2DRenderer"
+
+import CoreEngine from "../core3d/core_engine"
 
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
     private pointer: Vector2
 
+    private textPosition: CSS2DRenderer
+    private grid: GridHelper
     private water: Texture
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
@@ -32,6 +39,8 @@ class MapEditor extends CoreEngine {
 
         this.frame.style.width = (w / 5000 * 200)+"px";
         this.frame.style.height = (h / 5000 * 200)+"px";
+
+        this.textPosition.setSize(w, h)
     }
 
     onPointerMove = (e: PointerEvent) => {
@@ -55,13 +64,28 @@ class MapEditor extends CoreEngine {
 
         this.pointer = new Vector2()
 
+        this.textPosition = new CSS2DRenderer()
+        this.textPosition.setSize(w, h)
+        this.textPosition.domElement.style.position = "absolute"
+        this.textPosition.domElement.style.top = "0px"
+        this.textPosition.domElement.style.left = "0px"
+
+        document.body.appendChild(this.textPosition.domElement)
+
+        this.grid = new GridHelper(5000, 100, 0xffffff, 0xffffff)
+        this.grid.position.x = this.grid.position.y = 2500
+        this.grid.rotation.x = MathUtils.degToRad(90)
+
+        this.getScene().add(this.grid)
+
         window.addEventListener("resize", this.onWindowResize)
         window.addEventListener("pointermove", this.onPointerMove)
 
         this.setUpdateFunction(this.loop)
+        this.setAfterUpdateFunction(this.afterRender)
     }
 
-    create() {
+    createWater() {
         this.loadTexture("/tilesets/water frames/Water_1.png", (i: Texture) => {
             this.water = i
             this.water.magFilter = NearestFilter
@@ -79,11 +103,10 @@ class MapEditor extends CoreEngine {
 
             this.getScene().add(waterMesh)
         })
+    }
 
-        const grid: GridHelper = new GridHelper(5000, 100, 0xffffff, 0xffffff)
-        grid.position.x = grid.position.y = 2500
-        grid.rotation.x = MathUtils.degToRad(90)
-        this.getScene().add(grid)
+    create() {
+        this.createWater()
     }
 
     keydown = (e: KeyboardEvent) => {
@@ -175,6 +198,10 @@ class MapEditor extends CoreEngine {
 
         this.controls(tmr)
         this.cameraAndFrameUpdate(w, h)
+    }
+
+    afterRender(deltaTime: number) {
+        this.textPosition.render(this.getScene(), this.getCamera())
     }
 }
 
