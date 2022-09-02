@@ -1,4 +1,15 @@
-import { GridHelper, MathUtils, Mesh, MeshBasicMaterial, NearestFilter, OrthographicCamera, PlaneGeometry, RepeatWrapping, Texture } from "three";
+import {
+    GridHelper,
+    MathUtils,
+    Mesh,
+    MeshBasicMaterial,
+    NearestFilter,
+    OrthographicCamera,
+    PlaneGeometry,
+    RepeatWrapping,
+    Texture
+} from "three";
+
 import CoreEngine from "../core3d/core_engine";
 
 class MapEditor extends CoreEngine {
