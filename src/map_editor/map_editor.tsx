@@ -3,10 +3,9 @@ import CoreEngine from "../core3d/core_engine";
 
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
+    private keyPress: Map<string, boolean> = new Map<string, boolean>()
 
     private water: Texture
-
-    private keyPress: Map<string, boolean> = new Map<string, boolean>()
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -22,6 +21,8 @@ class MapEditor extends CoreEngine {
 
         this.frame.style.width = (w / 5000 * 200)+"px";
         this.frame.style.height = (h / 5000 * 200)+"px";
+
+        this.setUpdateFunction(this.loop)
     }
 
     create() {
@@ -97,6 +98,12 @@ class MapEditor extends CoreEngine {
 
         window.addEventListener('keydown', this.keydown)
         window.addEventListener('keyup', this.keyup)
+    }
+
+    loop(deltaTime: number) {
+        const tmr: number = deltaTime
+
+        if(!!this.water) this.water.offset.x = (this.water.offset.x + tmr * 0.5) % 1
     }
 }
 

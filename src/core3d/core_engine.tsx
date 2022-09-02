@@ -17,6 +17,8 @@ class CoreEngine {
     private texLoader: TextureLoader
     private clock: Clock
 
+    private update: (deltaTime: number) => void
+
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas
     }
@@ -63,11 +65,15 @@ class CoreEngine {
 
     render = () => {
         requestAnimationFrame(this.render)
+        if(!!this.update) this.update(this.clock.getDelta())
         this.renderer.render(this.scene, this.camera)
     }
 
+    setUpdateFunction(updateFunction: (deltaTime: number) => void) { this.update = updateFunction }
+
     getScene(): Scene { return this.scene }
     getCamera(): OrthographicCamera { return this.camera }
+    getDeltaTime(): number { return this.clock.getDelta() }
 }
 
 export default CoreEngine
