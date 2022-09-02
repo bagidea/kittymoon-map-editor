@@ -15,6 +15,8 @@ class MapEditor extends CoreEngine {
     }
 
     setup() {
+        this.getCamera().position.set(2500, 2500, 100)
+
         const w: number = window.innerWidth
         const h: number = window.innerHeight
 

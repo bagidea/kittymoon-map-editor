@@ -67,6 +67,7 @@ class CoreEngine {
     }
 
     getScene(): Scene { return this.scene }
+    getCamera(): OrthographicCamera { return this.camera }
 }
 
 export default CoreEngine
