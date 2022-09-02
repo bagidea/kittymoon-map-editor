@@ -2,6 +2,7 @@ import {
     Clock,
     OrthographicCamera,
     Scene,
+    Texture,
     TextureLoader,
     WebGLRenderer
 } from "three"
@@ -56,10 +57,16 @@ class CoreEngine {
         this.texLoader = new TextureLoader()
     }
 
+    loadTexture(path: string = "", callback: (i: Texture) => void) {
+        this.texLoader.load(path, (i: Texture) => { if(!!callback) callback(i) })
+    }
+
     render = () => {
         requestAnimationFrame(this.render)
         this.renderer.render(this.scene, this.camera)
     }
+
+    getScene(): Scene { return this.scene }
 }
 
 export default CoreEngine

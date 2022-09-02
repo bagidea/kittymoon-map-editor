@@ -1,7 +1,10 @@
+import { GridHelper, MathUtils, Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RepeatWrapping, Texture } from "three";
 import CoreEngine from "../core3d/core_engine";
 
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
+
+    private water: Texture
 
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
 
@@ -20,6 +23,28 @@ class MapEditor extends CoreEngine {
     }
 
     create() {
+        this.loadTexture("/tilesets/water frames/Water_1.png", (i: Texture) => {
+            this.water = i
+            this.water.magFilter = NearestFilter
+            this.water.wrapS = this.water.wrapT = RepeatWrapping
+            this.water.repeat.x = 5000 / 50
+            this.water.repeat.y = 5000 / 50
+
+            const waterGeometry: PlaneGeometry = new PlaneGeometry(5000, 5000, 1, 1)
+            const waterMaterial: MeshBasicMaterial = new MeshBasicMaterial({ color: 0xffffff, map: this.water })
+
+            const waterMesh: Mesh = new Mesh(waterGeometry, waterMaterial)
+            waterMesh.position.x = waterMesh.position.y = 2500
+            waterMesh.position.z = -2
+            waterMesh.rotation.y = MathUtils.degToRad(180)
+
+            this.getScene().add(waterMesh)
+        })
+
+        const grid: GridHelper = new GridHelper(5000, 100, 0xffffff, 0xffffff)
+        grid.position.x = grid.position.y = 2500
+        grid.rotation.x = MathUtils.degToRad(90)
+        this.getScene().add(grid)
     }
 
     keydown = (e: KeyboardEvent) => {
