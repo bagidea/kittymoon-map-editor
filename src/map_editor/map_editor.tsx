@@ -11,6 +11,14 @@ class MapEditor extends CoreEngine {
         this.frame = frame
     }
 
+    setup() {
+        const w: number = window.innerWidth
+        const h: number = window.innerHeight
+
+        this.frame.style.width = (w / 5000 * 200)+"px";
+        this.frame.style.height = (h / 5000 * 200)+"px";
+    }
+
     create() {
     }
 

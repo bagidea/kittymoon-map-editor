@@ -18,6 +18,7 @@ const Index = () => {
     useEffect(() => {
         const game: MapEditor = new MapEditor(canvas.current, frame.current)
         game.init()
+        game.setup()
         game.create()
         game.input()
         game.render()
