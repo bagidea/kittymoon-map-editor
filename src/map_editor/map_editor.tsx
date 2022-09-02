@@ -26,21 +26,22 @@ class MapEditor extends CoreEngine {
         this.frame = frame
     }
 
+    onWindowResize = () => {
+        const w: number = window.innerWidth
+        const h: number = window.innerHeight
+
+        this.frame.style.width = (w / 5000 * 200)+"px";
+        this.frame.style.height = (h / 5000 * 200)+"px";
+    }
+
     onPointerMove = (e: PointerEvent) => {
-        /*this.pointer.x = (e.clientX / window.innerWidth) * 2 - 1
-        this.pointer.y = - (e.clientY / window.innerHeight) * 2 + 1
-
-        console.log(e.clientX+" : "+e.clientY)*/
-
         const x: number = e.clientX
         const y: number = e.clientY
         const w: number = window.innerWidth
         const h: number = window.innerHeight
 
-        this.pointer.x = (this.getCamera().position.x - w / 2) + x
-        this.pointer.y = (this.getCamera().position.y - h / 2) + y
-
-        console.log(this.pointer.x+" : "+this.pointer.y)
+        this.pointer.x = Math.floor(((this.getCamera().position.x - w / 2) + x) / 50)
+        this.pointer.y = Math.floor(((this.getCamera().position.y - h / 2) + y) / 50)
     }
 
     setup() {
@@ -54,6 +55,7 @@ class MapEditor extends CoreEngine {
 
         this.pointer = new Vector2()
 
+        window.addEventListener("resize", this.onWindowResize)
         window.addEventListener("pointermove", this.onPointerMove)
 
         this.setUpdateFunction(this.loop)
