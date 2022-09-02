@@ -1,4 +1,4 @@
-import { GridHelper, MathUtils, Mesh, MeshBasicMaterial, NearestFilter, PlaneGeometry, RepeatWrapping, Texture } from "three";
+import { GridHelper, MathUtils, Mesh, MeshBasicMaterial, NearestFilter, OrthographicCamera, PlaneGeometry, RepeatWrapping, Texture } from "three";
 import CoreEngine from "../core3d/core_engine";
 
 class MapEditor extends CoreEngine {
@@ -100,10 +100,45 @@ class MapEditor extends CoreEngine {
         window.addEventListener('keyup', this.keyup)
     }
 
+    controls(tmr: number) {
+        const moveSpd: number = (this.keyPress.get("Shift") ? 1000 : 400)
+
+        const camera: OrthographicCamera = this.getCamera()
+
+        if(this.keyPress.get("ArrowUp")) camera.position.y -= tmr * moveSpd
+        if(this.keyPress.get("ArrowDown")) camera.position.y += tmr * moveSpd
+        if(this.keyPress.get("ArrowLeft")) camera.position.x -= tmr * moveSpd
+        if(this.keyPress.get("ArrowRight")) camera.position.x += tmr * moveSpd
+    }
+
+    cameraAndFrameUpdate(w: number, h: number) {
+        const camera: OrthographicCamera = this.getCamera()
+
+        camera.position.x = camera.position.x < w / 2 ?
+                                    w / 2 :
+                                    camera.position.x > 5000 - (w / 2) ?
+                                        5000 - (w / 2) :
+                                        camera.position.x
+
+        camera.position.y = camera.position.y < h / 2 ?
+                                    h / 2 :
+                                    camera.position.y > 5000 - (h / 2) ?
+                                        5000 - (h / 2) :
+                                        camera.position.y
+
+        this.frame.style.left = ((camera.position.x - w / 2) / 5000 * 189)+"px"
+        this.frame.style.top = ((camera.position.y - h / 2) / 5000 * 189)+"px"
+    }
+
     loop(deltaTime: number) {
         const tmr: number = deltaTime
+        const w: number = window.innerWidth
+        const h: number = window.innerHeight
 
         if(!!this.water) this.water.offset.x = (this.water.offset.x + tmr * 0.5) % 1
+
+        this.controls(tmr)
+        this.cameraAndFrameUpdate(w, h)
     }
 }
 
