@@ -9,14 +9,14 @@ import {
     useRef
 } from "react"
 
-import CoreEngine from "../src/core3d/core_engine"
+import MapEditor from "../src/map_editor/map_editor"
 
 const Index = () => {
     const canvas: MutableRefObject<HTMLCanvasElement> = useRef<HTMLCanvasElement>(null)
     const frame: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const game: CoreEngine = new CoreEngine(canvas.current, frame.current)
+        const game: MapEditor = new MapEditor(canvas.current, frame.current)
         game.init()
         game.create()
         game.input()
