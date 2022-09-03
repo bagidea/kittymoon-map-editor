@@ -22,6 +22,8 @@ class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
     private pointer: Vector2
+    private c_x: number = 0
+    private c_y: number = 0
 
     private css2dRenderer: CSS2DRenderer
     private text_pos: HTMLDivElement
@@ -46,13 +48,11 @@ class MapEditor extends CoreEngine {
         this.css2dRenderer.setSize(w, h)
     }
 
-    onPointerMove = (e: PointerEvent) => {
-        const x: number = e.clientX
-        const y: number = e.clientY
+    pointerUpdate() {
         const w: number = window.innerWidth
         const h: number = window.innerHeight
-        const px: number = ((this.getCamera().position.x - w / 2) + x)
-        const py: number = ((this.getCamera().position.y - h / 2) + y)
+        const px: number = ((this.getCamera().position.x - w / 2) + this.c_x)
+        const py: number = ((this.getCamera().position.y - h / 2) + this.c_y)
 
         this.pointer.x = Math.floor(px / 50)
         this.pointer.y = Math.floor(py / 50)
@@ -60,6 +60,13 @@ class MapEditor extends CoreEngine {
         this.textPosition.visible = true
         this.text_pos.textContent = "X: "+this.pointer.x+", Y: "+this.pointer.y
         this.textPosition.position.set(px, py + 40, 0)
+    }
+
+    onPointerMove = (e: PointerEvent) => {
+        this.c_x = e.clientX
+        this.c_y = e.clientY
+
+        this.pointerUpdate()
     }
 
     css2dSetup() {
@@ -108,6 +115,7 @@ class MapEditor extends CoreEngine {
         this.css2dSetup()
         this.setUpdateFunction(this.loop)
         this.setAfterUpdateFunction(this.afterRender)
+        this.cameraAndFrameUpdate(w, h)
     }
 
     createWater() {
@@ -184,7 +192,7 @@ class MapEditor extends CoreEngine {
         window.addEventListener('keyup', this.keyup)
     }
 
-    controls(tmr: number) {
+    controls(tmr: number, w: number, h: number) {
         const moveSpd: number = (this.keyPress.get("Shift") ? 1000 : 400)
         const camera: OrthographicCamera = this.getCamera()
 
@@ -198,7 +206,7 @@ class MapEditor extends CoreEngine {
         if(kl) camera.position.x -= tmr * moveSpd
         if(kr) camera.position.x += tmr * moveSpd
 
-        this.textPosition.visible = this.textPosition.visible && (ku || kd || kl || kr) ? false : this.textPosition.visible
+        if(ku || kd || kl || kr) this.cameraAndFrameUpdate(w, h)
     }
 
     cameraAndFrameUpdate(w: number, h: number) {
@@ -218,6 +226,8 @@ class MapEditor extends CoreEngine {
 
         this.frame.style.left = ((camera.position.x - w / 2) / 5000 * 189)+"px"
         this.frame.style.top = ((camera.position.y - h / 2) / 5000 * 189)+"px"
+
+        this.pointerUpdate()
     }
 
     loop(deltaTime: number) {
@@ -227,8 +237,7 @@ class MapEditor extends CoreEngine {
 
         if(!!this.water) this.water.offset.x = (this.water.offset.x + tmr * 0.5) % 1
 
-        this.controls(tmr)
-        this.cameraAndFrameUpdate(w, h)
+        this.controls(tmr, w, h)
     }
 
     afterRender(deltaTime: number) {
