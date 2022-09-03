@@ -35,12 +35,6 @@ const Index = () => {
             w="100vw"
             h="100vh"
             userSelect="none"
-        
-            style={
-                {
-
-                }
-            }
         >
             <canvas ref={ canvas } />
 
