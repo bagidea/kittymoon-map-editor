@@ -1,6 +1,8 @@
 import {
     Box,
-    Flex
+    Flex,
+    Text,
+    VStack
 } from "@chakra-ui/react"
 
 import {
@@ -26,10 +28,28 @@ const Index = () => {
 
     return (
         <Flex
+            position="relative"
             w="100vw"
             h="100vh"
         >
             <canvas ref={ canvas } />
+
+            <Flex
+                position="absolute"
+                w="200px"
+                bottom="240px"
+                left="30px"
+                fontSize="14px"
+            >
+                <VStack
+                    spacing="0px"
+                    w="full"
+                >
+                    <Text>Move - up, down, left, right</Text>
+                    <Text>Move fast - hold shift</Text>
+                    <Text>Grid show/hide - g</Text>
+                </VStack>
+            </Flex>
 
             <Flex
                 position="absolute"
@@ -44,8 +64,6 @@ const Index = () => {
                 <Box
                     ref={ frame }
                     position="absolute"
-                    //w="50px"
-                    //h="50px"
                     border="3px solid"
                     borderColor="white"
                 />
