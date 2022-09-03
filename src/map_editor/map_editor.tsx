@@ -1,14 +1,19 @@
 import {
+    Euler,
     GridHelper,
+    InstancedMesh,
     MathUtils,
+    Matrix4,
     Mesh,
     MeshBasicMaterial,
     NearestFilter,
     OrthographicCamera,
     PlaneGeometry,
+    Quaternion,
     RepeatWrapping,
     Texture,
-    Vector2
+    Vector2,
+    Vector3
 } from "three"
 
 import {
@@ -18,14 +23,22 @@ import {
 
 import CoreEngine from "../core3d/core_engine"
 
+interface MapTilesetData {
+    index: number,
+    position: Vector3,
+    is_walk: boolean
+}
+
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
     private pointer: Vector2
+    private matrix: Matrix4
 
     private c_x: number
     private c_y: number
     private key_g_down: boolean
+    private mapActionState: string
 
     private css2dRenderer: CSS2DRenderer
     private text_pos: HTMLDivElement
@@ -33,6 +46,9 @@ class MapEditor extends CoreEngine {
 
     private grid: GridHelper
     private water: Texture
+
+    private floorBlocks: InstancedMesh
+    private mapTilesets: Map<string, MapTilesetData> = new Map<string, MapTilesetData>()
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -42,6 +58,7 @@ class MapEditor extends CoreEngine {
         this.c_x = 0
         this.c_y = 0
         this.key_g_down = false
+        this.mapActionState = ""
     }
 
     onWindowResize = () => {
@@ -63,7 +80,6 @@ class MapEditor extends CoreEngine {
         this.pointer.x = Math.floor(px / 50)
         this.pointer.y = Math.floor(py / 50)
 
-        this.textPosition.visible = true
         this.text_pos.textContent = "X: "+this.pointer.x+", Y: "+this.pointer.y
         this.textPosition.position.set(px, py + 40, 0)
     }
@@ -72,7 +88,32 @@ class MapEditor extends CoreEngine {
         this.c_x = e.clientX
         this.c_y = e.clientY
 
+        this.textPosition.visible = true
         this.pointerUpdate()
+    }
+
+    onMouseDown = (e: MouseEvent) => {
+        switch(e.which) {
+            case 1:
+                if(this.mapActionState == "") this.mapActionState = "add"
+                break
+            case 3:
+                if(this.mapActionState == "") this.mapActionState = "remove"
+                break
+            default:
+        }
+    }
+
+    onMouseUp = (e: MouseEvent) => {
+        switch(e.which) {
+            case 1:
+                if(this.mapActionState == "add") this.mapActionState = ""
+                break
+            case 3:
+                if(this.mapActionState == "remove") this.mapActionState = ""
+                break
+            default:
+        }
     }
 
     css2dSetup() {
@@ -115,8 +156,12 @@ class MapEditor extends CoreEngine {
 
         this.getScene().add(this.grid)
 
+        this.matrix = new Matrix4()
+
         window.addEventListener("resize", this.onWindowResize)
         window.addEventListener("pointermove", this.onPointerMove)
+        document.addEventListener('mousedown', this.onMouseDown)
+        document.addEventListener('mouseup', this.onMouseUp)
 
         this.css2dSetup()
         this.setUpdateFunction(this.loop)
@@ -144,12 +189,66 @@ class MapEditor extends CoreEngine {
         })
     }
 
+    addFloor(c: number, r: number) {
+        const rotation: Euler = new Euler()
+        const quaternion: Quaternion = new Quaternion()
+
+        rotation.y = MathUtils.degToRad(180)
+        quaternion.setFromEuler(rotation)
+
+        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+
+        this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
+        this.floorBlocks.setMatrixAt(block.index, this.matrix)
+        this.floorBlocks.instanceMatrix.needsUpdate = true
+    }
+
+    removeFloor(c: number, r: number) {
+        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+
+        this.floorBlocks.setMatrixAt(block.index, new Matrix4())
+        this.floorBlocks.instanceMatrix.needsUpdate = true
+    }
+
+    createFloor() {
+        this.loadTexture("/tilesets/Hills.png", (i: Texture) => {
+            const b: number = 1 / 6
+
+            const tex: Texture = i
+            tex.magFilter = NearestFilter
+            tex.repeat.x = tex.repeat.y = b
+
+            const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
+            const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({ color: 0xffffff, map: tex })
+
+            this.floorBlocks = new InstancedMesh(floorGeometry, floorMaterial, 10000)
+
+            this.getScene().add(this.floorBlocks)
+
+            let inx: number = 0
+
+            for(let r: number = 0; r < 100; r++) {
+                for(let c: number = 0; c < 100; c++) {
+                    this.mapTilesets.set(
+                        "block_"+c+"_"+r,
+                        {
+                            index: inx++,
+                            position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
+                            is_walk: false
+                        }
+                    )
+                }
+            }
+        })
+    }
+
     create() {
         this.createWater()
+        this.createFloor()
     }
 
     keydown = (e: KeyboardEvent) => {
-        switch(e.key) {
+        switch(e.code) {
             case "ArrowUp":
                 this.keyPress.set("ArrowUp", true)
                 break
@@ -165,14 +264,14 @@ class MapEditor extends CoreEngine {
             case "Shift":
                 this.keyPress.set("Shift", true)
                 break
-            case "g":
-                this.keyPress.set("g", true)
+            case "KeyG":
+                this.keyPress.set("KeyG", true)
                 break
         }
     }
 
     keyup = (e: KeyboardEvent) => {
-        switch(e.key) {
+        switch(e.code) {
             case "ArrowUp":
                 this.keyPress.set("ArrowUp", false)
                 break
@@ -188,8 +287,8 @@ class MapEditor extends CoreEngine {
             case "Shift":
                 this.keyPress.set("Shift", false)
                 break
-            case "g":
-                this.keyPress.set("g", false)
+            case "KeyG":
+                this.keyPress.set("KeyG", false)
                 this.key_g_down = false
                 break
         }
@@ -213,7 +312,7 @@ class MapEditor extends CoreEngine {
         const kd: boolean = this.keyPress.get("ArrowDown")
         const kl: boolean = this.keyPress.get("ArrowLeft")
         const kr: boolean = this.keyPress.get("ArrowRight")
-        const k_g: boolean = this.keyPress.get("g")
+        const k_g: boolean = this.keyPress.get("KeyG")
 
         if(ku) camera.position.y -= tmr * moveSpd
         if(kd) camera.position.y += tmr * moveSpd
@@ -249,6 +348,18 @@ class MapEditor extends CoreEngine {
         this.pointerUpdate()
     }
 
+    mapCreator() {
+        switch(this.mapActionState) {
+            case "add":
+                this.addFloor(this.pointer.x, this.pointer.y)
+                break
+            case "remove":
+                this.removeFloor(this.pointer.x, this.pointer.y)
+                break
+            default:
+        }
+    }
+
     loop(deltaTime: number) {
         const tmr: number = deltaTime
         const w: number = window.innerWidth
@@ -257,6 +368,7 @@ class MapEditor extends CoreEngine {
         if(!!this.water) this.water.offset.x = (this.water.offset.x + tmr * 0.5) % 1
 
         this.controls(tmr, w, h)
+        this.mapCreator()
     }
 
     afterRender(deltaTime: number) {
