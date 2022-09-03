@@ -19,11 +19,14 @@ const Index = () => {
 
     useEffect(() => {
         const game: MapEditor = new MapEditor(canvas.current, frame.current)
+
         game.init()
         game.setup()
         game.create()
         game.input()
         game.render()
+
+        document.addEventListener('contextmenu', (e: MouseEvent) => e.preventDefault())
     })
 
     return (
@@ -31,6 +34,13 @@ const Index = () => {
             position="relative"
             w="100vw"
             h="100vh"
+            userSelect="none"
+        
+            style={
+                {
+
+                }
+            }
         >
             <canvas ref={ canvas } />
 

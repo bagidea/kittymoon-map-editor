@@ -22,8 +22,10 @@ class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean> = new Map<string, boolean>()
     private pointer: Vector2
-    private c_x: number = 0
-    private c_y: number = 0
+
+    private c_x: number
+    private c_y: number
+    private key_g_down: boolean
 
     private css2dRenderer: CSS2DRenderer
     private text_pos: HTMLDivElement
@@ -36,6 +38,10 @@ class MapEditor extends CoreEngine {
         super(canvas)
 
         this.frame = frame
+
+        this.c_x = 0
+        this.c_y = 0
+        this.key_g_down = false
     }
 
     onWindowResize = () => {
@@ -159,6 +165,9 @@ class MapEditor extends CoreEngine {
             case "Shift":
                 this.keyPress.set("Shift", true)
                 break
+            case "g":
+                this.keyPress.set("g", true)
+                break
         }
     }
 
@@ -178,6 +187,10 @@ class MapEditor extends CoreEngine {
                 break
             case "Shift":
                 this.keyPress.set("Shift", false)
+                break
+            case "g":
+                this.keyPress.set("g", false)
+                this.key_g_down = false
                 break
         }
     }
@@ -200,6 +213,7 @@ class MapEditor extends CoreEngine {
         const kd: boolean = this.keyPress.get("ArrowDown")
         const kl: boolean = this.keyPress.get("ArrowLeft")
         const kr: boolean = this.keyPress.get("ArrowRight")
+        const k_g: boolean = this.keyPress.get("g")
 
         if(ku) camera.position.y -= tmr * moveSpd
         if(kd) camera.position.y += tmr * moveSpd
@@ -207,6 +221,11 @@ class MapEditor extends CoreEngine {
         if(kr) camera.position.x += tmr * moveSpd
 
         if(ku || kd || kl || kr) this.cameraAndFrameUpdate(w, h)
+
+        if(k_g && !this.key_g_down) {
+            this.key_g_down = true
+            this.grid.visible = !this.grid.visible
+        }
     }
 
     cameraAndFrameUpdate(w: number, h: number) {
