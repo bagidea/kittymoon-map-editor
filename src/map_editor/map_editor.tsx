@@ -1,6 +1,7 @@
 import {
     Euler,
     GridHelper,
+    InstancedBufferAttribute,
     InstancedMesh,
     MathUtils,
     Matrix4,
@@ -11,6 +12,7 @@ import {
     PlaneGeometry,
     Quaternion,
     RepeatWrapping,
+    Shader,
     Texture,
     Vector2,
     Vector3
@@ -49,6 +51,8 @@ class MapEditor extends CoreEngine {
 
     private floorBlocks: InstancedMesh
     private mapTilesets: Map<string, MapTilesetData> = new Map<string, MapTilesetData>()
+    private t_x: Int8Array
+    private t_y: Int8Array
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -193,7 +197,7 @@ class MapEditor extends CoreEngine {
         const rotation: Euler = new Euler()
         const quaternion: Quaternion = new Quaternion()
 
-        rotation.y = MathUtils.degToRad(180)
+        rotation.y = rotation.z = MathUtils.degToRad(180)
         quaternion.setFromEuler(rotation)
 
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
@@ -201,6 +205,12 @@ class MapEditor extends CoreEngine {
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
         this.floorBlocks.setMatrixAt(block.index, this.matrix)
         this.floorBlocks.instanceMatrix.needsUpdate = true
+
+        this.t_x[block.index] = Math.floor(Math.random() * 6)
+        this.t_y[block.index] = Math.floor(Math.random() * 6)
+
+        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
+        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
     }
 
     removeFloor(c: number, r: number) {
@@ -217,13 +227,55 @@ class MapEditor extends CoreEngine {
             const tex: Texture = i
             tex.magFilter = NearestFilter
             tex.repeat.x = tex.repeat.y = b
+            tex.offset.set(b * 0, (1 - b) - b * 0)
 
             const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
-            const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({ color: 0xffffff, map: tex })
+
+            const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
+                color: 0xffffff,
+                transparent: true
+            })
+
+            floorMaterial.onBeforeCompile = (shader: Shader) => {
+                shader.uniforms.texAtlas = { value: tex }
+                shader.vertexShader = `
+                    attribute float t_x;
+                    attribute float t_y;
+                    varying float vT_x;
+                    varying float vT_y;
+                    ${shader.vertexShader}
+                `.replace(
+                    `void main() {`,
+                    `void main() {
+                        vT_x = t_x;
+                        vT_y = t_y;
+                    `
+                ),
+                shader.fragmentShader = `
+                    uniform sampler2D texAtlas;
+                    varying float vT_x;
+                    varying float vT_y;
+                    ${shader.fragmentShader}
+                `.replaceAll(
+                    `#include <map_fragment>`,
+                    `#include <map_fragment>
+
+                     float b = ${b};
+                     vec2 blockUv = b * (vec2(vT_x, 5.0f - vT_y) + vUv); 
+                     vec4 blockColor = texture(texAtlas, blockUv);
+                     diffuseColor *= blockColor;
+                    `
+                )
+            }
+            
+            floorMaterial.defines = { "USE_UV": "" }
 
             this.floorBlocks = new InstancedMesh(floorGeometry, floorMaterial, 10000)
 
             this.getScene().add(this.floorBlocks)
+
+            this.t_x = new Int8Array(10000).fill(0)
+            this.t_y = new Int8Array(10000).fill(0)
 
             let inx: number = 0
 
@@ -239,6 +291,9 @@ class MapEditor extends CoreEngine {
                     )
                 }
             }
+
+            this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
+            this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
         })
     }
 
