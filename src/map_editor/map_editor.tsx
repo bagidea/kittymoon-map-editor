@@ -196,39 +196,119 @@ class MapEditor extends CoreEngine {
 
     subCheckFloor(c: number, r: number) {
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
-        const b_u: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r - 1))
-        const b_d: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r + 1))
-        const b_l: MapTilesetData = this.mapTilesets.get("block_"+(c - 1)+"_"+r)
-        const b_r: MapTilesetData = this.mapTilesets.get("block_"+(c + 1)+"_"+r)
 
-        if(!b_u.is_walk && !b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
-            this.t_x[block.index] = 0
-            this.t_y[block.index] = 3
-        }
-        else if(b_u.is_walk && !b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
-            this.t_x[block.index] = 0
-            this.t_y[block.index] = 2
-        }
-        else if(!b_u.is_walk && b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+        const b_u: boolean = this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk
+        const b_d: boolean = this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk
+        const b_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk
+        const b_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk
+        const b_u_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk
+        const b_u_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk
+        const b_d_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk
+        const b_d_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk
+
+        // Row 0
+        if(!b_u && b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 0
         }
-        else if(b_u.is_walk && b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+        else if(!b_u && b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 0
+        }
+        else if(!b_u && b_d && b_l && b_r && !b_u_l && !b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 0
+        }
+        else if(!b_u && b_d && b_l && !b_r && !b_u_l && !b_u_r && b_d_l && !b_d_r) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 0
+        }
+        else if(b_u && b_d && b_l && b_r && !b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 0
+        }
+        else if(b_u && b_d && b_l && b_r && b_u_l && !b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 0
+        }
+
+        // Row 1
+        if(b_u && b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 1
         }
-        else if(!b_u.is_walk && !b_d.is_walk && b_l.is_walk && !b_r.is_walk) {
+        else if(b_u && b_d && !b_l && b_r && !b_u_l && b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 1
+        }
+        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 1
+        }
+        else if(b_u && b_d && b_l && !b_r && b_u_l && !b_u_r && b_d_l && !b_d_r) {
             this.t_x[block.index] = 3
+            this.t_y[block.index] = 1
+        }
+        /*else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 1
+        }
+        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 1
+        }*/
+
+        // Row 2
+        if(b_u && !b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 2
+        }
+        else if(b_u && !b_d && !b_l && b_r && !b_u_l && b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 2
+        }
+        else if(b_u && !b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 2
+        }
+        else if(b_u && !b_d && b_l && !b_r && b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 2
+        }
+        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 2
+        }
+        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && !b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 2
+        }
+
+        // Row 3
+        if(!b_u && !b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 0
             this.t_y[block.index] = 3
         }
-        else if(!b_u.is_walk && !b_d.is_walk && !b_l.is_walk && b_r.is_walk) {
+        else if(!b_u && !b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 3
         }
-        else if(!b_u.is_walk && !b_d.is_walk && b_l.is_walk && b_r.is_walk) {
+        else if(!b_u && !b_d && b_l && b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 3
         }
+        else if(!b_u && !b_d && b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 3
+        }
+        /*else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 3
+        }*/
+        /*else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 3
+        }*/
 
         block.is_walk = true
         this.mapTilesets.set("block_"+c+"_"+r, block)
@@ -245,10 +325,15 @@ class MapEditor extends CoreEngine {
         quaternion.setFromEuler(rotation)
 
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
-        const b_u: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r - 1))
-        const b_d: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r + 1))
-        const b_l: MapTilesetData = this.mapTilesets.get("block_"+(c - 1)+"_"+r)
-        const b_r: MapTilesetData = this.mapTilesets.get("block_"+(c + 1)+"_"+r)
+
+        const b_u: boolean = this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk
+        const b_d: boolean = this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk
+        const b_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk
+        const b_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk
+        const b_u_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk
+        const b_u_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk
+        const b_d_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk
+        const b_d_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk
 
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
         this.floorBlocks.setMatrixAt(block.index, this.matrix)
@@ -256,10 +341,14 @@ class MapEditor extends CoreEngine {
 
         this.subCheckFloor(c, r)
 
-        if(b_u.is_walk) this.subCheckFloor(c, r - 1)
-        if(b_d.is_walk) this.subCheckFloor(c, r + 1)
-        if(b_l.is_walk) this.subCheckFloor(c - 1, r)
-        if(b_r.is_walk) this.subCheckFloor(c + 1, r)
+        if(b_u) this.subCheckFloor(c, r - 1)
+        if(b_d) this.subCheckFloor(c, r + 1)
+        if(b_l) this.subCheckFloor(c - 1, r)
+        if(b_r) this.subCheckFloor(c + 1, r)
+        if(b_u_l) this.subCheckFloor(c - 1, r - 1)
+        if(b_u_r) this.subCheckFloor(c + 1, r - 1)
+        if(b_d_l) this.subCheckFloor(c - 1, r + 1)
+        if(b_d_r) this.subCheckFloor(c + 1, r + 1)
     }
 
     removeFloor(c: number, r: number) {
