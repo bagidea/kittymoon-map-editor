@@ -156,6 +156,7 @@ class MapEditor extends CoreEngine {
 
         this.grid = new GridHelper(5000, 100, 0xffffff, 0xffffff)
         this.grid.position.x = this.grid.position.y = 2500
+        this.grid.position.z = 99
         this.grid.rotation.x = MathUtils.degToRad(90)
 
         this.getScene().add(this.grid)
