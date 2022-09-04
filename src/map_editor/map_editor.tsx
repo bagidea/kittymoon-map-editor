@@ -194,6 +194,49 @@ class MapEditor extends CoreEngine {
         })
     }
 
+    subCheckFloor(c: number, r: number) {
+        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+        const b_u: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r - 1))
+        const b_d: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r + 1))
+        const b_l: MapTilesetData = this.mapTilesets.get("block_"+(c - 1)+"_"+r)
+        const b_r: MapTilesetData = this.mapTilesets.get("block_"+(c + 1)+"_"+r)
+
+        if(!b_u.is_walk && !b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 3
+        }
+        else if(b_u.is_walk && !b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 2
+        }
+        else if(!b_u.is_walk && b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 0
+        }
+        else if(b_u.is_walk && b_d.is_walk && !b_l.is_walk && !b_r.is_walk) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 1
+        }
+        else if(!b_u.is_walk && !b_d.is_walk && b_l.is_walk && !b_r.is_walk) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 3
+        }
+        else if(!b_u.is_walk && !b_d.is_walk && !b_l.is_walk && b_r.is_walk) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 3
+        }
+        else if(!b_u.is_walk && !b_d.is_walk && b_l.is_walk && b_r.is_walk) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 3
+        }
+
+        block.is_walk = true
+        this.mapTilesets.set("block_"+c+"_"+r, block)
+
+        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
+        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
+    }
+
     addFloor(c: number, r: number) {
         const rotation: Euler = new Euler()
         const quaternion: Quaternion = new Quaternion()
@@ -202,16 +245,21 @@ class MapEditor extends CoreEngine {
         quaternion.setFromEuler(rotation)
 
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+        const b_u: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r - 1))
+        const b_d: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+(r + 1))
+        const b_l: MapTilesetData = this.mapTilesets.get("block_"+(c - 1)+"_"+r)
+        const b_r: MapTilesetData = this.mapTilesets.get("block_"+(c + 1)+"_"+r)
 
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
         this.floorBlocks.setMatrixAt(block.index, this.matrix)
         this.floorBlocks.instanceMatrix.needsUpdate = true
 
-        this.t_x[block.index] = Math.floor(Math.random() * 6)
-        this.t_y[block.index] = Math.floor(Math.random() * 6)
+        this.subCheckFloor(c, r)
 
-        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
-        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
+        if(b_u.is_walk) this.subCheckFloor(c, r - 1)
+        if(b_d.is_walk) this.subCheckFloor(c, r + 1)
+        if(b_l.is_walk) this.subCheckFloor(c - 1, r)
+        if(b_r.is_walk) this.subCheckFloor(c + 1, r)
     }
 
     removeFloor(c: number, r: number) {
