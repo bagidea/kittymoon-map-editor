@@ -211,23 +211,23 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 0
         }
-        else if(!b_u && b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && b_d_r) {
+        if(!b_u && b_d && !b_l && b_r && !b_u_l /*&& !b_u_r*/ && !b_d_l /*&& b_d_r*/) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 0
         }
-        else if(!b_u && b_d && b_l && b_r && !b_u_l && !b_u_r && b_d_l && b_d_r) {
+        if(!b_u && b_d && b_l && b_r /*&& !b_u_l && !b_u_r*/ && b_d_l && b_d_r) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 0
         }
-        else if(!b_u && b_d && b_l && !b_r && !b_u_l && !b_u_r && b_d_l && !b_d_r) {
+        if(!b_u && b_d && b_l && !b_r /*&& !b_u_l*/ && !b_u_r /*&& b_d_l*/ && !b_d_r) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 0
         }
-        else if(b_u && b_d && b_l && b_r && !b_u_l && b_u_r && b_d_l && b_d_r) {
+        if(b_u && b_d && b_l && b_r && !b_u_l && b_u_r && b_d_l && b_d_r) {
             this.t_x[block.index] = 4
             this.t_y[block.index] = 0
         }
-        else if(b_u && b_d && b_l && b_r && b_u_l && !b_u_r && b_d_l && b_d_r) {
+        if(b_u && b_d && b_l && b_r && b_u_l && !b_u_r && b_d_l && b_d_r) {
             this.t_x[block.index] = 5
             this.t_y[block.index] = 0
         }
@@ -237,15 +237,15 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 1
         }
-        else if(b_u && b_d && !b_l && b_r && !b_u_l && b_u_r && !b_d_l && b_d_r) {
+        if(b_u && b_d && !b_l && b_r /*&& !b_u_l*/ && b_u_r /*&& !b_d_l*/ && b_d_r) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 1
         }
-        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
+        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 1
         }
-        else if(b_u && b_d && b_l && !b_r && b_u_l && !b_u_r && b_d_l && !b_d_r) {
+        if(b_u && b_d && b_l && !b_r && b_u_l /*&& !b_u_r*/ && b_d_l /*&& !b_d_r*/) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 1
         }
@@ -263,23 +263,23 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 2
         }
-        else if(b_u && !b_d && !b_l && b_r && !b_u_l && b_u_r && !b_d_l && !b_d_r) {
+        if(b_u && !b_d && !b_l && b_r /*&& !b_u_l*/ && b_u_r && !b_d_l /*&& !b_d_r*/) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 2
         }
-        else if(b_u && !b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && !b_d_r) {
+        if(b_u && !b_d && b_l && b_r /*&& b_u_l && b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 2
         }
-        else if(b_u && !b_d && b_l && !b_r && b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(b_u && !b_d && b_l && !b_r && b_u_l /*&& !b_u_r && !b_d_l*/ && !b_d_r) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 2
         }
-        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && b_d_r) {
+        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && b_d_r) {
             this.t_x[block.index] = 4
             this.t_y[block.index] = 2
         }
-        else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && !b_d_r) {
+        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && !b_d_r) {
             this.t_x[block.index] = 5
             this.t_y[block.index] = 2
         }
@@ -289,15 +289,15 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 3
         }
-        else if(!b_u && !b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(!b_u && !b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 3
         }
-        else if(!b_u && !b_d && b_l && b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(!b_u && !b_d && b_l && b_r /*&& !b_u_l && !b_u_r*/ && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 3
         }
-        else if(!b_u && !b_d && b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(!b_u && !b_d && b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 3
         }
@@ -308,6 +308,58 @@ class MapEditor extends CoreEngine {
         /*else if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && b_d_r) {
             this.t_x[block.index] = 5
             this.t_y[block.index] = 3
+        }*/
+
+        // Row 4
+        if(!b_u && b_d && !b_l && !b_r && !b_u_l && !b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 4
+        }
+        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 4
+        }
+        if(b_u && b_d && b_l && b_r && b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 4
+        }
+        if(b_u && b_d && !b_l && b_r && !b_u_l && !b_u_r && b_d_l && !b_d_r) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 4
+        }
+        /*if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 4
+        }
+        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && b_d_l && !b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 4
+        }*/
+
+        // Row 5
+        if(b_u && b_d && b_l && b_r && !b_u_l && !b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 0
+            this.t_y[block.index] = 5
+        }
+        if(b_u && !b_d && !b_l && !b_r && b_u_l && b_u_r && !b_d_l && !b_d_r) {
+            this.t_x[block.index] = 1
+            this.t_y[block.index] = 5
+        }
+        if(!b_u && !b_d && !b_l && b_r && !b_u_l && !b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 2
+            this.t_y[block.index] = 5
+        }
+        if(b_u && b_d && b_l && b_r && !b_u_l && b_u_r && !b_d_l && b_d_r) {
+            this.t_x[block.index] = 3
+            this.t_y[block.index] = 5
+        }
+        /*if(b_u && b_d && b_l && b_r && !b_u_l && b_u_r && b_d_l && b_d_r) {
+            this.t_x[block.index] = 4
+            this.t_y[block.index] = 5
+        }
+        if(b_u && b_d && b_l && b_r && b_u_l && !b_u_r && b_d_l && !b_d_r) {
+            this.t_x[block.index] = 5
+            this.t_y[block.index] = 5
         }*/
 
         block.is_walk = true
