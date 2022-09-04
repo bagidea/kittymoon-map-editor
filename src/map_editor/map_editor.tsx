@@ -111,10 +111,16 @@ class MapEditor extends CoreEngine {
     onMouseUp = (e: MouseEvent) => {
         switch(e.which) {
             case 1:
-                if(this.mapActionState == "add") this.mapActionState = ""
+                if(this.mapActionState == "add") {
+                    this.mapActionState = ""
+                    this.laterUpdate()
+                }
                 break
             case 3:
-                if(this.mapActionState == "remove") this.mapActionState = ""
+                if(this.mapActionState == "remove") {
+                    this.mapActionState = ""
+                    this.laterUpdate()
+                }
                 break
             default:
         }
@@ -194,24 +200,24 @@ class MapEditor extends CoreEngine {
         })
     }
 
-    subCheckFloor(c: number, r: number) {
+    subCheckFloor(c: number, r: number, status: boolean = true) {
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
 
-        const b_u: boolean = this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk
-        const b_d: boolean = this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk
-        const b_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk
-        const b_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk
-        const b_u_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk
-        const b_u_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk
-        const b_d_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk
-        const b_d_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk
+        const b_u: boolean = r > 0 ? this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         // Row 0
         if(!b_u && b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 0
         }
-        if(!b_u && b_d && !b_l && b_r && !b_u_l /*&& !b_u_r*/ && !b_d_l /*&& b_d_r*/) {
+        if(!b_u && b_d && !b_l && b_r /*&& !b_u_l && !b_u_r && !b_d_l && b_d_r*/) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 0
         }
@@ -219,7 +225,7 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 0
         }
-        if(!b_u && b_d && b_l && !b_r /*&& !b_u_l*/ && !b_u_r /*&& b_d_l*/ && !b_d_r) {
+        if(!b_u && b_d && b_l && !b_r /*&& !b_u_l && !b_u_r && b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 0
         }
@@ -233,7 +239,7 @@ class MapEditor extends CoreEngine {
         }
 
         // Row 1
-        if(b_u && b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(b_u && b_d && !b_l && !b_r /*&& !b_u_l && !b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 1
         }
@@ -263,7 +269,7 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 2
         }
-        if(b_u && !b_d && !b_l && b_r /*&& !b_u_l*/ && b_u_r && !b_d_l /*&& !b_d_r*/) {
+        if(b_u && !b_d && !b_l && b_r /*&& !b_u_l && b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 2
         }
@@ -271,7 +277,7 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 2
         }
-        if(b_u && !b_d && b_l && !b_r && b_u_l /*&& !b_u_r && !b_d_l*/ && !b_d_r) {
+        if(b_u && !b_d && b_l && !b_r /*&& b_u_l && !b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 3
             this.t_y[block.index] = 2
         }
@@ -285,7 +291,7 @@ class MapEditor extends CoreEngine {
         }
 
         // Row 3
-        if(!b_u && !b_d && !b_l && !b_r && !b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+        if(!b_u && !b_d && !b_l && !b_r /*&& !b_u_l && !b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 3
         }
@@ -293,7 +299,7 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 3
         }
-        if(!b_u && !b_d && b_l && b_r /*&& !b_u_l && !b_u_r*/ && !b_d_l && !b_d_r) {
+        if(!b_u && !b_d && b_l && b_r /*&& !b_u_l && !b_u_r && !b_d_l && !b_d_r*/) {
             this.t_x[block.index] = 2
             this.t_y[block.index] = 3
         }
@@ -315,7 +321,7 @@ class MapEditor extends CoreEngine {
             this.t_x[block.index] = 0
             this.t_y[block.index] = 4
         }
-        if(b_u && b_d && b_l && b_r && b_u_l && b_u_r && !b_d_l && !b_d_r) {
+        if(/*b_u &&*/ b_d && b_l && b_r /*&& b_u_l && b_u_r*/ && !b_d_l && !b_d_r) {
             this.t_x[block.index] = 1
             this.t_y[block.index] = 4
         }
@@ -362,36 +368,22 @@ class MapEditor extends CoreEngine {
             this.t_y[block.index] = 5
         }*/
 
-        block.is_walk = true
+        block.is_walk = status
         this.mapTilesets.set("block_"+c+"_"+r, block)
 
         this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
         this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
     }
 
-    addFloor(c: number, r: number) {
-        const rotation: Euler = new Euler()
-        const quaternion: Quaternion = new Quaternion()
-
-        rotation.y = rotation.z = MathUtils.degToRad(180)
-        quaternion.setFromEuler(rotation)
-
-        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
-
-        const b_u: boolean = this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk
-        const b_d: boolean = this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk
-        const b_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk
-        const b_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk
-        const b_u_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk
-        const b_u_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk
-        const b_d_l: boolean = this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk
-        const b_d_r: boolean = this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk
-
-        this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
-        this.floorBlocks.setMatrixAt(block.index, this.matrix)
-        this.floorBlocks.instanceMatrix.needsUpdate = true
-
-        this.subCheckFloor(c, r)
+    updateSubFloor(c: number, r: number) {
+        const b_u: boolean = r > 0 ? this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(b_u) this.subCheckFloor(c, r - 1)
         if(b_d) this.subCheckFloor(c, r + 1)
@@ -403,11 +395,42 @@ class MapEditor extends CoreEngine {
         if(b_d_r) this.subCheckFloor(c + 1, r + 1)
     }
 
+    addFloor(c: number, r: number) {
+        const rotation: Euler = new Euler()
+        const quaternion: Quaternion = new Quaternion()
+
+        rotation.y = rotation.z = MathUtils.degToRad(180)
+        quaternion.setFromEuler(rotation)
+
+        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+
+        this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
+        this.floorBlocks.setMatrixAt(block.index, this.matrix)
+        this.floorBlocks.instanceMatrix.needsUpdate = true
+
+        this.subCheckFloor(c, r)
+        this.updateSubFloor(c, r)
+    }
+
     removeFloor(c: number, r: number) {
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
 
         this.floorBlocks.setMatrixAt(block.index, new Matrix4())
         this.floorBlocks.instanceMatrix.needsUpdate = true
+
+        this.subCheckFloor(c, r, false)
+        this.updateSubFloor(c, r)
+    }
+
+    laterUpdate() {
+        console.log(true)
+        for(let r: number = 0; r < 100; r++) {
+            for(let c: number = 0; c < 100; c++) {
+                const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+                if(block.is_walk) this.subCheckFloor(c, r)
+                else this.subCheckFloor(c, r, false)
+            }
+        }
     }
 
     createFloor() {
@@ -506,7 +529,7 @@ class MapEditor extends CoreEngine {
             case "ArrowRight":
                 this.keyPress.set("ArrowRight", true)
                 break
-            case "Shift":
+            case "ShiftLeft" || "ShiftRight":
                 this.keyPress.set("Shift", true)
                 break
             case "KeyG":
@@ -529,7 +552,7 @@ class MapEditor extends CoreEngine {
             case "ArrowRight":
                 this.keyPress.set("ArrowRight", false)
                 break
-            case "Shift":
+            case "ShiftLeft" || "ShiftRight":
                 this.keyPress.set("Shift", false)
                 break
             case "KeyG":
