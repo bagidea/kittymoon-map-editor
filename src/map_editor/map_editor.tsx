@@ -273,12 +273,8 @@ class MapEditor extends CoreEngine {
             this.t_y[block.index] = 0
         }
         else if(!b_u && b_d && b_l && b_r) {
-            if(/*b_u_l && b_u_r &&*/ !b_d_l /*&& b_d_r*/) {
-                this.t_x[block.index] = 3
-                this.t_y[block.index] = 5
-            }
-            else if(/*b_u_l && b_u_r && b_d_l &&*/ !b_d_r) {
-                this.t_x[block.index] = 2
+            if(/*b_u_l && b_u_r &&*/ !b_d_l && !b_d_r) {
+                this.t_x[block.index] = 1
                 this.t_y[block.index] = 4
             } else {
                 this.t_x[block.index] = 2
@@ -290,12 +286,22 @@ class MapEditor extends CoreEngine {
             this.t_y[block.index] = 1
         }
         else if(b_u && b_d && b_l && !b_r) {
-            this.t_x[block.index] = 3
-            this.t_y[block.index] = 1
+            if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
+                this.t_x[block.index] = 2
+                this.t_y[block.index] = 4
+            } else {
+                this.t_x[block.index] = 3
+                this.t_y[block.index] = 1
+            }
         }
         else if(b_u && b_d && !b_l && b_r) {
-            this.t_x[block.index] = 1
-            this.t_y[block.index] = 1
+            if(/*b_u_l &&*/ !b_u_r /*&& b_d_l*/ && !b_d_r) {
+                this.t_x[block.index] = 2
+                this.t_y[block.index] = 4
+            } else {
+                this.t_x[block.index] = 1
+                this.t_y[block.index] = 1
+            }
         }
         else if(!b_u && !b_d && b_l && b_r) {
             this.t_x[block.index] = 2
