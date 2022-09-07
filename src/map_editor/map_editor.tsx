@@ -28,12 +28,13 @@ import CoreEngine from "../core3d/core_engine"
 interface MapTilesetData {
     index: number,
     position: Vector3,
-    is_walk: boolean
+    is_walk: boolean,
+    layer: number
 }
 
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
-    private keyPress: Map<string, boolean> = new Map<string, boolean>()
+    private keyPress: Map<string, boolean>
     private pointer: Vector2
     private matrix: Matrix4
 
@@ -48,11 +49,20 @@ class MapEditor extends CoreEngine {
 
     private grid: GridHelper
     private water: Texture
+    private texs: Map<string, Texture>
+
+    private resources_count: number
+    private resources_max: number
+    private is_start: boolean
 
     private floorBlocks: InstancedMesh
-    private mapTilesets: Map<string, MapTilesetData> = new Map<string, MapTilesetData>()
+    private mapTilesets: Map<string, MapTilesetData>
+
     private t_x: Int8Array
     private t_y: Int8Array
+    private b_x: Float32Array
+    private b_y: Float32Array
+    private f_layer: Int8Array
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -63,6 +73,14 @@ class MapEditor extends CoreEngine {
         this.c_y = 0
         this.key_g_down = false
         this.mapActionState = ""
+
+        this.resources_count = 0
+        this.resources_max = 3
+        this.is_start = false
+
+        this.keyPress = new Map<string, boolean>()
+        this.texs = new Map<string, Texture>()
+        this.mapTilesets = new Map<string, MapTilesetData>()
     }
 
     onWindowResize = () => {
@@ -113,13 +131,13 @@ class MapEditor extends CoreEngine {
             case 1:
                 if(this.mapActionState == "add") {
                     this.mapActionState = ""
-                    this.laterUpdate()
+                    //this.laterUpdate()
                 }
                 break
             case 3:
                 if(this.mapActionState == "remove") {
                     this.mapActionState = ""
-                    this.laterUpdate()
+                    //this.laterUpdate()
                 }
                 break
             default:
@@ -428,7 +446,6 @@ class MapEditor extends CoreEngine {
     }
 
     laterUpdate() {
-        console.log(true)
         for(let r: number = 0; r < 100; r++) {
             for(let c: number = 0; c < 100; c++) {
                 const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
@@ -438,7 +455,134 @@ class MapEditor extends CoreEngine {
         }
     }
 
+    loadedResource() {
+        const b: number = 1 / 6
+
+        const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
+
+        const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true
+        })
+
+        floorMaterial.onBeforeCompile = (shader: Shader) => {
+            shader.uniforms.texGrass = { value: this.texs.get("Grass") }
+            shader.uniforms.texHills = { value: this.texs.get("Hills") }
+            shader.uniforms.texTilledDirt = { value: this.texs.get("TilledDirt") }
+
+            shader.vertexShader = `
+                attribute float t_x;
+                attribute float t_y;
+                attribute float b_x;
+                attribute float b_y;
+                attribute float f_layer;
+
+                varying float vT_x;
+                varying float vT_y;
+                varying float vB_x;
+                varying float vB_y;
+                varying float vF_layer;
+
+                ${shader.vertexShader}
+            `.replace(
+                `void main() {`,
+                `void main() {
+                    vT_x = t_x;
+                    vT_y = t_y;
+                    vB_x = b_x;
+                    vB_y = b_y;
+                    vF_layer = f_layer;
+                `
+            ),
+
+            shader.fragmentShader = `
+                uniform sampler2D texGrass;
+                uniform sampler2D texHills;
+                uniform sampler2D texTilledDirt;
+
+                varying float vT_x;
+                varying float vT_y;
+                varying float vB_x;
+                varying float vB_y;
+                varying float vF_layer;
+
+                ${shader.fragmentShader}
+            `.replaceAll(
+                `#include <map_fragment>`,
+                `#include <map_fragment>
+
+                    vec2 blockUv = vec2(
+                        vB_x * (vUv.x + vT_x),
+                        vB_y * (vUv.y + (5.0f - vT_y))
+                    ); 
+
+                    if(vF_layer == 0.0f) {
+                        vec4 blockColor = texture(texGrass, blockUv);
+                        diffuseColor *= blockColor;
+                    }
+                    else if(vF_layer == 1.0f) {
+                        vec4 blockColor = texture(texHills, blockUv);
+                        diffuseColor *= blockColor;
+                    } else {
+                        vec4 blockColor = texture(texTilledDirt, blockUv);
+                        diffuseColor *= blockColor;
+                    }
+                `
+            )
+        }
+        
+        floorMaterial.defines = { "USE_UV": "" }
+
+        this.floorBlocks = new InstancedMesh(floorGeometry, floorMaterial, 10000)
+
+        this.getScene().add(this.floorBlocks)
+
+        this.t_x = new Int8Array(10000).fill(0)
+        this.t_y = new Int8Array(10000).fill(0)
+        this.b_x = new Float32Array(10000).fill(1 / 6)
+        this.b_y = new Float32Array(10000).fill(1 / 6)
+        this.f_layer = new Int8Array(10000).fill(0)
+
+        let inx: number = 0
+
+        for(let r: number = 0; r < 100; r++) {
+            for(let c: number = 0; c < 100; c++) {
+                this.mapTilesets.set(
+                    "block_"+c+"_"+r,
+                    {
+                        index: inx++,
+                        position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
+                        is_walk: false,
+                        layer: 0
+                    }
+                )
+            }
+        }
+
+        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
+        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
+        this.floorBlocks.geometry.setAttribute("b_x", new InstancedBufferAttribute(this.b_x, 1))
+        this.floorBlocks.geometry.setAttribute("b_y", new InstancedBufferAttribute(this.b_y, 1))
+        this.floorBlocks.geometry.setAttribute("f_layer", new InstancedBufferAttribute(this.f_layer, 1))
+
+        this.is_start = true
+    }
+
     createFloor() {
+        this.loadTexture("/tilesets/Grass.png", (i: Texture) => {
+            const b: number = 1 / 6
+
+            const tex: Texture = i
+            tex.magFilter = NearestFilter
+            tex.repeat.x = tex.repeat.y = b
+            tex.offset.set(b * 0, (1 - b) - b * 0)
+
+            this.texs.set("Grass", tex)
+            this.resources_count++
+
+            if(this.resources_count >= this.resources_max) this.loadedResource()
+        })
+
         this.loadTexture("/tilesets/Hills.png", (i: Texture) => {
             const b: number = 1 / 6
 
@@ -447,71 +591,24 @@ class MapEditor extends CoreEngine {
             tex.repeat.x = tex.repeat.y = b
             tex.offset.set(b * 0, (1 - b) - b * 0)
 
-            const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
+            this.texs.set("Hills", tex)
+            this.resources_count++
 
-            const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-                color: 0xffffff,
-                transparent: true
-            })
+            if(this.resources_count >= this.resources_max) this.loadedResource()
+        })
 
-            floorMaterial.onBeforeCompile = (shader: Shader) => {
-                shader.uniforms.texAtlas = { value: tex }
-                shader.vertexShader = `
-                    attribute float t_x;
-                    attribute float t_y;
-                    varying float vT_x;
-                    varying float vT_y;
-                    ${shader.vertexShader}
-                `.replace(
-                    `void main() {`,
-                    `void main() {
-                        vT_x = t_x;
-                        vT_y = t_y;
-                    `
-                ),
-                shader.fragmentShader = `
-                    uniform sampler2D texAtlas;
-                    varying float vT_x;
-                    varying float vT_y;
-                    ${shader.fragmentShader}
-                `.replaceAll(
-                    `#include <map_fragment>`,
-                    `#include <map_fragment>
+        this.loadTexture("/tilesets/TilledDirt.png", (i: Texture) => {
+            const b: number = 1 / 6
 
-                     float b = ${b};
-                     vec2 blockUv = b * (vec2(vT_x, 5.0f - vT_y) + vUv); 
-                     vec4 blockColor = texture(texAtlas, blockUv);
-                     diffuseColor *= blockColor;
-                    `
-                )
-            }
-            
-            floorMaterial.defines = { "USE_UV": "" }
+            const tex: Texture = i
+            tex.magFilter = NearestFilter
+            tex.repeat.x = tex.repeat.y = b
+            tex.offset.set(b * 0, (1 - b) - b * 0)
 
-            this.floorBlocks = new InstancedMesh(floorGeometry, floorMaterial, 10000)
+            this.texs.set("TilledDirt", tex)
+            this.resources_count++
 
-            this.getScene().add(this.floorBlocks)
-
-            this.t_x = new Int8Array(10000).fill(0)
-            this.t_y = new Int8Array(10000).fill(0)
-
-            let inx: number = 0
-
-            for(let r: number = 0; r < 100; r++) {
-                for(let c: number = 0; c < 100; c++) {
-                    this.mapTilesets.set(
-                        "block_"+c+"_"+r,
-                        {
-                            index: inx++,
-                            position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
-                            is_walk: false
-                        }
-                    )
-                }
-            }
-
-            this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
-            this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
+            if(this.resources_count >= this.resources_max) this.loadedResource()
         })
     }
 
@@ -622,6 +719,8 @@ class MapEditor extends CoreEngine {
     }
 
     mapCreator() {
+        if(!this.is_start) return
+
         switch(this.mapActionState) {
             case "add":
                 this.addFloor(this.pointer.x, this.pointer.y)
