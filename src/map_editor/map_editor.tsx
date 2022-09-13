@@ -28,8 +28,7 @@ import CoreEngine from "../core3d/core_engine"
 interface MapTilesetData {
     index: number,
     position: Vector3,
-    is_walk: boolean,
-    layer: number
+    is_walk: boolean
 }
 
 interface TilesetXY {
@@ -65,7 +64,7 @@ class MapEditor extends CoreEngine {
     private resources_max: number
     private is_start: boolean
 
-    private mapTilesets: Map<string, MapTilesetData>
+    private mapTilesets: Map<number, Map<string, MapTilesetData>>
 
     private floorBlocks: Map<number, InstancedMesh>
     private tilesetXYs: Map<number, TilesetXY>
@@ -88,7 +87,9 @@ class MapEditor extends CoreEngine {
         this.keyPress = new Map<string, boolean>()
         this.texs = new Map<string, Texture>()
 
-        this.mapTilesets = new Map<string, MapTilesetData>()
+        this.mapTilesets = new Map<number, Map<string, MapTilesetData>>()
+        this.mapTilesets.set(0, new Map<string, MapTilesetData>())
+        this.mapTilesets.set(1, new Map<string, MapTilesetData>())
 
         this.floorBlocks = new Map<number, InstancedMesh>()
         this.tilesetXYs = new Map<number, TilesetXY>()
@@ -231,16 +232,16 @@ class MapEditor extends CoreEngine {
     }
 
     subCheckFloor(c: number, r: number, status: boolean = true) {
-        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
 
-        const b_u: boolean = r > 0 ? this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk : false
-        const b_d: boolean = r < 99 ? this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk : false
-        const b_l: boolean = c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk : false
-        const b_r: boolean = c < 99 ?this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk : false
-        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
-        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
-        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
-        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+        const b_u: boolean = r > 0 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(!b_u && !b_d && !b_l && !b_r) {
             this.tilesetXYs.get(0).x[block.index] = 0
@@ -404,7 +405,7 @@ class MapEditor extends CoreEngine {
         }
         
         block.is_walk = status
-        this.mapTilesets.set("block_"+c+"_"+r, block)
+        this.mapTilesets.get(0).set("block_"+c+"_"+r, block)
 
         this.floorBlocks.get(0).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(0).x, 1))
         this.floorBlocks.get(0).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(0).y, 1))
@@ -413,14 +414,14 @@ class MapEditor extends CoreEngine {
     }
 
     updateSubFloor(c: number, r: number) {
-        const b_u: boolean = r > 0 ? this.mapTilesets.get("block_"+c+"_"+(r - 1)).is_walk : false
-        const b_d: boolean = r < 99 ? this.mapTilesets.get("block_"+c+"_"+(r + 1)).is_walk : false
-        const b_l: boolean = c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+r).is_walk : false
-        const b_r: boolean = c < 99 ?this.mapTilesets.get("block_"+(c + 1)+"_"+r).is_walk : false
-        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
-        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
-        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
-        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+        const b_u: boolean = r > 0 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(b_u) this.subCheckFloor(c, r - 1)
         if(b_d) this.subCheckFloor(c, r + 1)
@@ -439,7 +440,7 @@ class MapEditor extends CoreEngine {
         rotation.y = rotation.z = MathUtils.degToRad(180)
         quaternion.setFromEuler(rotation)
 
-        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
 
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
         this.floorBlocks.get(0).setMatrixAt(block.index, this.matrix)
@@ -450,7 +451,7 @@ class MapEditor extends CoreEngine {
     }
 
     removeFloor(c: number, r: number) {
-        const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
 
         this.floorBlocks.get(0).setMatrixAt(block.index, new Matrix4())
         this.floorBlocks.get(0).instanceMatrix.needsUpdate = true
@@ -462,7 +463,7 @@ class MapEditor extends CoreEngine {
     laterUpdate() {
         for(let r: number = 0; r < 100; r++) {
             for(let c: number = 0; c < 100; c++) {
-                const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
+                const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
                 if(block.is_walk) this.subCheckFloor(c, r)
                 else this.subCheckFloor(c, r, false)
             }
@@ -552,15 +553,27 @@ class MapEditor extends CoreEngine {
 
         for(let r: number = 0; r < 100; r++) {
             for(let c: number = 0; c < 100; c++) {
-                this.mapTilesets.set(
-                    "block_"+c+"_"+r,
+                const b_name: string = "block_"+c+"_"+r
+
+                this.mapTilesets.get(0).set(
+                    b_name,
                     {
-                        index: inx++,
+                        index: inx,
                         position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
-                        is_walk: false,
-                        layer: 0
+                        is_walk: false
                     }
                 )
+
+                this.mapTilesets.get(1).set(
+                    b_name,
+                    {
+                        index: inx,
+                        position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
+                        is_walk: false
+                    }
+                )
+
+                inx++
             }
         }
 
