@@ -32,6 +32,16 @@ interface MapTilesetData {
     layer: number
 }
 
+interface TilesetXY {
+    x: Int8Array,
+    y: Int8Array
+}
+
+interface BlockXY {
+    x: Float32Array,
+    y: Float32Array
+}
+
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean>
@@ -55,14 +65,11 @@ class MapEditor extends CoreEngine {
     private resources_max: number
     private is_start: boolean
 
-    private floorBlocks: InstancedMesh
     private mapTilesets: Map<string, MapTilesetData>
 
-    private t_x: Int8Array
-    private t_y: Int8Array
-    private b_x: Float32Array
-    private b_y: Float32Array
-    private f_layer: Int8Array
+    private floorBlocks: Map<number, InstancedMesh>
+    private tilesetXYs: Map<number, TilesetXY>
+    private blockXYs: Map<number, BlockXY>
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -80,7 +87,12 @@ class MapEditor extends CoreEngine {
 
         this.keyPress = new Map<string, boolean>()
         this.texs = new Map<string, Texture>()
+
         this.mapTilesets = new Map<string, MapTilesetData>()
+
+        this.floorBlocks = new Map<number, InstancedMesh>()
+        this.tilesetXYs = new Map<number, TilesetXY>()
+        this.blockXYs = new Map<number, BlockXY>()
     }
 
     onWindowResize = () => {
@@ -231,177 +243,173 @@ class MapEditor extends CoreEngine {
         const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(!b_u && !b_d && !b_l && !b_r) {
-            this.t_x[block.index] = 0
-            this.t_y[block.index] = 3
+            this.tilesetXYs.get(0).x[block.index] = 0
+            this.tilesetXYs.get(0).y[block.index] = 3
         }
         else if(b_u && !b_d && !b_l && !b_r) {
             if(b_u_l && b_u_r /*&& !b_d_l && !b_d_r*/) {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 5
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 5
             } else {
-                this.t_x[block.index] = 0
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 0
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
         }
         else if(!b_u && b_d && !b_l && !b_r) {
             if(/*!b_u_l && !b_u_r &&*/ b_d_l && b_d_r) {
-                this.t_x[block.index] = 0
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 0
+                this.tilesetXYs.get(0).y[block.index] = 4
             } else {
-                this.t_x[block.index] = 0
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 0
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
         }
         else if(!b_u && !b_d && b_l && !b_r) {
             if(/*!b_u_l && !b_u_r &&*/ b_d_l /*&& !b_d_r*/) {
-                this.t_x[block.index] = 3
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 3
+                this.tilesetXYs.get(0).y[block.index] = 4
             } else {
-                this.t_x[block.index] = 3
-                this.t_y[block.index] = 3
+                this.tilesetXYs.get(0).x[block.index] = 3
+                this.tilesetXYs.get(0).y[block.index] = 3
             }
         }
         else if(!b_u && !b_d && !b_l && b_r) {
             if(/*!b_u_l && !b_u_r && !b_d_l &&*/ b_d_r) {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 5
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 5
             } else {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 3
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 3
             }
         }
         else if(b_u && !b_d && b_l && !b_r) {
-            this.t_x[block.index] = 3
-            this.t_y[block.index] = 2
+            this.tilesetXYs.get(0).x[block.index] = 3
+            this.tilesetXYs.get(0).y[block.index] = 2
         }
         else if(b_u && !b_d && !b_l && b_r) {
-            this.t_x[block.index] = 1
-            this.t_y[block.index] = 2
+            this.tilesetXYs.get(0).x[block.index] = 1
+            this.tilesetXYs.get(0).y[block.index] = 2
         }
         else if(b_u && !b_d && b_l && b_r) {
-            this.t_x[block.index] = 2
-            this.t_y[block.index] = 2
+            this.tilesetXYs.get(0).x[block.index] = 2
+            this.tilesetXYs.get(0).y[block.index] = 2
         }
         else if(!b_u && b_d && b_l && !b_r) {
-            this.t_x[block.index] = 3
-            this.t_y[block.index] = 0
+            this.tilesetXYs.get(0).x[block.index] = 3
+            this.tilesetXYs.get(0).y[block.index] = 0
         }
         else if(!b_u && b_d && !b_l && b_r) {
-            this.t_x[block.index] = 1
-            this.t_y[block.index] = 0
+            this.tilesetXYs.get(0).x[block.index] = 1
+            this.tilesetXYs.get(0).y[block.index] = 0
         }
         else if(!b_u && b_d && b_l && b_r) {
             if(/*b_u_l && b_u_r &&*/ !b_d_l && !b_d_r) {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 4
             } else {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
         }
         else if(b_u && b_d && !b_l && !b_r) {
-            this.t_x[block.index] = 0
-            this.t_y[block.index] = 1
+            this.tilesetXYs.get(0).x[block.index] = 0
+            this.tilesetXYs.get(0).y[block.index] = 1
         }
         else if(b_u && b_d && b_l && !b_r) {
             if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 4
             } else {
-                this.t_x[block.index] = 3
-                this.t_y[block.index] = 1
+                this.tilesetXYs.get(0).x[block.index] = 3
+                this.tilesetXYs.get(0).y[block.index] = 1
             }
         }
         else if(b_u && b_d && !b_l && b_r) {
             if(/*b_u_l &&*/ !b_u_r /*&& b_d_l*/ && !b_d_r) {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 4
             } else {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 1
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 1
             }
         }
         else if(!b_u && !b_d && b_l && b_r) {
-            this.t_x[block.index] = 2
-            this.t_y[block.index] = 3
+            this.tilesetXYs.get(0).x[block.index] = 2
+            this.tilesetXYs.get(0).y[block.index] = 3
         }
         else if(b_u && b_d && b_l && b_r) {
             if(b_u_l && b_u_r && b_d_l && b_d_r) {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 1
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 1
             }
             else if(!b_u_l && b_u_r && b_d_l && b_d_r) {
-                this.t_x[block.index] = 4
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 4
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
             else if(b_u_l && !b_u_r && b_d_l && b_d_r) {
-                this.t_x[block.index] = 5
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 5
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
             else if(b_u_l && b_u_r && !b_d_l && b_d_r) {
-                this.t_x[block.index] = 4
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 4
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
             else if(b_u_l && b_u_r && b_d_l && !b_d_r) {
-                this.t_x[block.index] = 5
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 5
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
             else if(!b_u_l && !b_u_r && b_d_l && b_d_r) {
-                this.t_x[block.index] = 0
-                this.t_y[block.index] = 5
+                this.tilesetXYs.get(0).x[block.index] = 0
+                this.tilesetXYs.get(0).y[block.index] = 5
             }
             else if(b_u_l && b_u_r && !b_d_l && !b_d_r) {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 4
             }
             else if(!b_u_l && b_u_r && !b_d_l && b_d_r) {
-                this.t_x[block.index] = 3
-                this.t_y[block.index] = 5
+                this.tilesetXYs.get(0).x[block.index] = 3
+                this.tilesetXYs.get(0).y[block.index] = 5
             }
             else if(b_u_l && !b_u_r && b_d_l && !b_d_r) {
-                this.t_x[block.index] = 2
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 2
+                this.tilesetXYs.get(0).y[block.index] = 4
             }
             else if(!b_u_l && !b_u_r && !b_d_l && b_d_r) {
-                this.t_x[block.index] = 4
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 4
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
             else if(!b_u_l && !b_u_r && b_d_l && !b_d_r) {
-                this.t_x[block.index] = 5
-                this.t_y[block.index] = 0
+                this.tilesetXYs.get(0).x[block.index] = 5
+                this.tilesetXYs.get(0).y[block.index] = 0
             }
             else if(!b_u_l && b_u_r && !b_d_l && !b_d_r) {
-                this.t_x[block.index] = 4
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 4
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
             else if(b_u_l && !b_u_r && !b_d_l && !b_d_r) {
-                this.t_x[block.index] = 5
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 5
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
             else if(!b_u_l && b_u_r && b_d_l && !b_d_r) {
-                this.t_x[block.index] = 5
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 5
+                this.tilesetXYs.get(0).y[block.index] = 2
             }
             else if(b_u_l && !b_u_r && !b_d_l && b_d_r) {
-                this.t_x[block.index] = 4
-                this.t_y[block.index] = 2
+                this.tilesetXYs.get(0).x[block.index] = 4
+                this.tilesetXYs.get(0).y[block.index] = 2
             } else {
-                this.t_x[block.index] = 1
-                this.t_y[block.index] = 4
+                this.tilesetXYs.get(0).x[block.index] = 1
+                this.tilesetXYs.get(0).y[block.index] = 4
             }
         }
         
         block.is_walk = status
         this.mapTilesets.set("block_"+c+"_"+r, block)
 
-        this.f_layer[block.index] = this.keyPress.get("Control") ? 1 : 0
-
-        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
-        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
-        this.floorBlocks.geometry.setAttribute("f_layer", new InstancedBufferAttribute(this.f_layer, 1))
-
-        //this.f_layer[block.index] = 1
-        //this.floorBlocks.geometry.setAttribute("f_layer", new InstancedBufferAttribute(this.f_layer, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(0).x, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(0).y, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(0).x, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(0).y, 1))
     }
 
     updateSubFloor(c: number, r: number) {
@@ -434,8 +442,8 @@ class MapEditor extends CoreEngine {
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
 
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
-        this.floorBlocks.setMatrixAt(block.index, this.matrix)
-        this.floorBlocks.instanceMatrix.needsUpdate = true
+        this.floorBlocks.get(0).setMatrixAt(block.index, this.matrix)
+        this.floorBlocks.get(0).instanceMatrix.needsUpdate = true
 
         this.subCheckFloor(c, r)
         this.updateSubFloor(c, r)
@@ -444,8 +452,8 @@ class MapEditor extends CoreEngine {
     removeFloor(c: number, r: number) {
         const block: MapTilesetData = this.mapTilesets.get("block_"+c+"_"+r)
 
-        this.floorBlocks.setMatrixAt(block.index, new Matrix4())
-        this.floorBlocks.instanceMatrix.needsUpdate = true
+        this.floorBlocks.get(0).setMatrixAt(block.index, new Matrix4())
+        this.floorBlocks.get(0).instanceMatrix.needsUpdate = true
 
         this.subCheckFloor(c, r, false)
         this.updateSubFloor(c, r)
@@ -472,22 +480,18 @@ class MapEditor extends CoreEngine {
         })
 
         floorMaterial.onBeforeCompile = (shader: Shader) => {
-            shader.uniforms.texGrass = { value: this.texs.get("Grass") }
-            shader.uniforms.texHills = { value: this.texs.get("Hills") }
-            //shader.uniforms.texTilledDirt = { value: this.texs.get("TilledDirt") }
+            shader.uniforms.texAtlas = { value: this.texs.get("Hills") }
 
             shader.vertexShader = `
                 attribute float t_x;
                 attribute float t_y;
                 attribute float b_x;
                 attribute float b_y;
-                attribute float f_layer;
 
                 varying float vT_x;
                 varying float vT_y;
                 varying float vB_x;
                 varying float vB_y;
-                varying float vF_layer;
 
                 ${shader.vertexShader}
             `.replace(
@@ -497,20 +501,16 @@ class MapEditor extends CoreEngine {
                     vT_y = t_y;
                     vB_x = b_x;
                     vB_y = b_y;
-                    vF_layer = f_layer;
                 `
             ),
 
             shader.fragmentShader = `
-                uniform sampler2D texGrass;
-                uniform sampler2D texHills;
-                //uniform sampler2D texTilledDirt;
+                uniform sampler2D texAtlas;
 
                 varying float vT_x;
                 varying float vT_y;
                 varying float vB_x;
                 varying float vB_y;
-                varying float vF_layer;
 
                 ${shader.fragmentShader}
             `.replaceAll(
@@ -522,33 +522,31 @@ class MapEditor extends CoreEngine {
                         vB_y * (vUv.y + (5.0f - vT_y))
                     ); 
 
-                    if(vF_layer == 0.0f) {
-                        vec4 blockColor = texture(texGrass, blockUv);
-                        diffuseColor *= blockColor;
-                    }
-                    else {
-                    //else if(vF_layer == 1.0f) {
-                        vec4 blockColor = texture(texHills, blockUv);
-                        diffuseColor *= blockColor;
-                    } /*else {
-                        vec4 blockColor = texture(texTilledDirt, blockUv);
-                        diffuseColor *= blockColor;
-                    }*/
+                    vec4 blockColor = texture(texAtlas, blockUv);
+                    diffuseColor *= blockColor;
                 `
             )
         }
         
         floorMaterial.defines = { "USE_UV": "" }
 
-        this.floorBlocks = new InstancedMesh(floorGeometry, floorMaterial, 10000)
+        this.floorBlocks.set(0, new InstancedMesh(floorGeometry, floorMaterial, 10000))
 
-        this.getScene().add(this.floorBlocks)
+        this.getScene().add(this.floorBlocks.get(0))
 
-        this.t_x = new Int8Array(10000).fill(0)
-        this.t_y = new Int8Array(10000).fill(0)
-        this.b_x = new Float32Array(10000).fill(1 / 6)
-        this.b_y = new Float32Array(10000).fill(1 / 6)
-        this.f_layer = new Int8Array(10000).fill(0)
+        const t_xy: TilesetXY = {
+            x: new Int8Array(10000).fill(0),
+            y: new Int8Array(10000).fill(0)
+        }
+
+        this.tilesetXYs.set(0, t_xy)
+
+        const b_xy: BlockXY = {
+            x: new Float32Array(10000).fill(1 / 6),
+            y: new Float32Array(10000).fill(1 / 6)
+        }
+
+        this.blockXYs.set(0, b_xy)
 
         let inx: number = 0
 
@@ -566,11 +564,10 @@ class MapEditor extends CoreEngine {
             }
         }
 
-        this.floorBlocks.geometry.setAttribute("t_x", new InstancedBufferAttribute(this.t_x, 1))
-        this.floorBlocks.geometry.setAttribute("t_y", new InstancedBufferAttribute(this.t_y, 1))
-        this.floorBlocks.geometry.setAttribute("b_x", new InstancedBufferAttribute(this.b_x, 1))
-        this.floorBlocks.geometry.setAttribute("b_y", new InstancedBufferAttribute(this.b_y, 1))
-        this.floorBlocks.geometry.setAttribute("f_layer", new InstancedBufferAttribute(this.f_layer, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(0).x, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(0).y, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(0).x, 1))
+        this.floorBlocks.get(0).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(0).y, 1))
 
         this.is_start = true
     }
