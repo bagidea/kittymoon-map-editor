@@ -423,14 +423,14 @@ class MapEditor extends CoreEngine {
         const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
         const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
-        if(b_u) this.subCheckFloor(c, r - 1)
-        if(b_d) this.subCheckFloor(c, r + 1)
-        if(b_l) this.subCheckFloor(c - 1, r)
-        if(b_r) this.subCheckFloor(c + 1, r)
-        if(b_u_l) this.subCheckFloor(c - 1, r - 1)
-        if(b_u_r) this.subCheckFloor(c + 1, r - 1)
-        if(b_d_l) this.subCheckFloor(c - 1, r + 1)
-        if(b_d_r) this.subCheckFloor(c + 1, r + 1)
+        if(b_u) this.subCheckFloor(c, r - 1, true, layer)
+        if(b_d) this.subCheckFloor(c, r + 1, true, layer)
+        if(b_l) this.subCheckFloor(c - 1, r, true, layer)
+        if(b_r) this.subCheckFloor(c + 1, r, true, layer)
+        if(b_u_l) this.subCheckFloor(c - 1, r - 1, true, layer)
+        if(b_u_r) this.subCheckFloor(c + 1, r - 1, true, layer)
+        if(b_d_l) this.subCheckFloor(c - 1, r + 1, true, layer)
+        if(b_d_r) this.subCheckFloor(c + 1, r + 1, true, layer)
     }
 
     addFloor(c: number, r: number, layer: number = 0) {
@@ -460,17 +460,7 @@ class MapEditor extends CoreEngine {
         this.updateSubFloor(c, r, layer)
     }
 
-    laterUpdate() {
-        for(let r: number = 0; r < 100; r++) {
-            for(let c: number = 0; c < 100; c++) {
-                const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
-                if(block.is_walk) this.subCheckFloor(c, r)
-                else this.subCheckFloor(c, r, false)
-            }
-        }
-    }
-
-    createInstancedMesh = (): InstancedMesh => {
+    createInstancedMesh = (tex: Texture): InstancedMesh => {
         const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
 
         const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
@@ -479,7 +469,7 @@ class MapEditor extends CoreEngine {
         })
 
         floorMaterial.onBeforeCompile = (shader: Shader) => {
-            shader.uniforms.texAtlas = { value: this.texs.get("Hills") }
+            shader.uniforms.texAtlas = { value: tex }
 
             shader.vertexShader = `
                 attribute float t_x;
@@ -532,8 +522,8 @@ class MapEditor extends CoreEngine {
         return new InstancedMesh(floorGeometry, floorMaterial, 10000)
     }
 
-    initTilesetMap = (layer: number) => {
-        this.floorBlocks.set(layer, this.createInstancedMesh())
+    initTilesetMap = (layer: number, tex: Texture) => {
+        this.floorBlocks.set(layer, this.createInstancedMesh(tex))
 
         this.getScene().add(this.floorBlocks.get(layer))
 
@@ -576,8 +566,8 @@ class MapEditor extends CoreEngine {
     }
 
     loadedResource() {
-        this.initTilesetMap(0)
-        this.initTilesetMap(1)
+        this.initTilesetMap(0, this.texs.get("Grass"))
+        this.initTilesetMap(1, this.texs.get("Hills"))
 
         this.is_start = true
     }
@@ -743,10 +733,10 @@ class MapEditor extends CoreEngine {
 
         switch(this.mapActionState) {
             case "add":
-                this.addFloor(this.pointer.x, this.pointer.y)
+                this.addFloor(this.pointer.x, this.pointer.y, 1)
                 break
             case "remove":
-                this.removeFloor(this.pointer.x, this.pointer.y)
+                this.removeFloor(this.pointer.x, this.pointer.y, 1)
                 break
             default:
         }
