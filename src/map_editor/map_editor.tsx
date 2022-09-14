@@ -232,185 +232,185 @@ class MapEditor extends CoreEngine {
     }
 
     subCheckFloor(c: number, r: number, status: boolean = true, layer: number = 0) {
-        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
+        const block: MapTilesetData = this.mapTilesets.get(layer).get("block_"+c+"_"+r)
 
-        const b_u: boolean = r > 0 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r - 1)).is_walk : false
-        const b_d: boolean = r < 99 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r + 1)).is_walk : false
-        const b_l: boolean = c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+r).is_walk : false
-        const b_r: boolean = c < 99 ?this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+r).is_walk : false
-        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
-        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
-        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
-        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+        const b_u: boolean = r > 0 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(!b_u && !b_d && !b_l && !b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 0
-            this.tilesetXYs.get(0).y[block.index] = 3
+            this.tilesetXYs.get(layer).x[block.index] = 0
+            this.tilesetXYs.get(layer).y[block.index] = 3
         }
         else if(b_u && !b_d && !b_l && !b_r) {
             if(b_u_l && b_u_r /*&& !b_d_l && !b_d_r*/) {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 5
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 5
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 0
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
         }
         else if(!b_u && b_d && !b_l && !b_r) {
             if(/*!b_u_l && !b_u_r &&*/ b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 0
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 4
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 0
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
         }
         else if(!b_u && !b_d && b_l && !b_r) {
             if(/*!b_u_l && !b_u_r &&*/ b_d_l /*&& !b_d_r*/) {
-                this.tilesetXYs.get(0).x[block.index] = 3
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 3
+                this.tilesetXYs.get(layer).y[block.index] = 4
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 3
-                this.tilesetXYs.get(0).y[block.index] = 3
+                this.tilesetXYs.get(layer).x[block.index] = 3
+                this.tilesetXYs.get(layer).y[block.index] = 3
             }
         }
         else if(!b_u && !b_d && !b_l && b_r) {
             if(/*!b_u_l && !b_u_r && !b_d_l &&*/ b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 5
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 5
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 3
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 3
             }
         }
         else if(b_u && !b_d && b_l && !b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 3
-            this.tilesetXYs.get(0).y[block.index] = 2
+            this.tilesetXYs.get(layer).x[block.index] = 3
+            this.tilesetXYs.get(layer).y[block.index] = 2
         }
         else if(b_u && !b_d && !b_l && b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 1
-            this.tilesetXYs.get(0).y[block.index] = 2
+            this.tilesetXYs.get(layer).x[block.index] = 1
+            this.tilesetXYs.get(layer).y[block.index] = 2
         }
         else if(b_u && !b_d && b_l && b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 2
-            this.tilesetXYs.get(0).y[block.index] = 2
+            this.tilesetXYs.get(layer).x[block.index] = 2
+            this.tilesetXYs.get(layer).y[block.index] = 2
         }
         else if(!b_u && b_d && b_l && !b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 3
-            this.tilesetXYs.get(0).y[block.index] = 0
+            this.tilesetXYs.get(layer).x[block.index] = 3
+            this.tilesetXYs.get(layer).y[block.index] = 0
         }
         else if(!b_u && b_d && !b_l && b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 1
-            this.tilesetXYs.get(0).y[block.index] = 0
+            this.tilesetXYs.get(layer).x[block.index] = 1
+            this.tilesetXYs.get(layer).y[block.index] = 0
         }
         else if(!b_u && b_d && b_l && b_r) {
             if(/*b_u_l && b_u_r &&*/ !b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 4
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
         }
         else if(b_u && b_d && !b_l && !b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 0
-            this.tilesetXYs.get(0).y[block.index] = 1
+            this.tilesetXYs.get(layer).x[block.index] = 0
+            this.tilesetXYs.get(layer).y[block.index] = 1
         }
         else if(b_u && b_d && b_l && !b_r) {
             if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 4
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 3
-                this.tilesetXYs.get(0).y[block.index] = 1
+                this.tilesetXYs.get(layer).x[block.index] = 3
+                this.tilesetXYs.get(layer).y[block.index] = 1
             }
         }
         else if(b_u && b_d && !b_l && b_r) {
             if(/*b_u_l &&*/ !b_u_r /*&& b_d_l*/ && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 4
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 1
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 1
             }
         }
         else if(!b_u && !b_d && b_l && b_r) {
-            this.tilesetXYs.get(0).x[block.index] = 2
-            this.tilesetXYs.get(0).y[block.index] = 3
+            this.tilesetXYs.get(layer).x[block.index] = 2
+            this.tilesetXYs.get(layer).y[block.index] = 3
         }
         else if(b_u && b_d && b_l && b_r) {
             if(b_u_l && b_u_r && b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 1
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 1
             }
             else if(!b_u_l && b_u_r && b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 4
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
             else if(b_u_l && !b_u_r && b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 5
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 5
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
             else if(b_u_l && b_u_r && !b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 4
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(b_u_l && b_u_r && b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 5
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 5
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(!b_u_l && !b_u_r && b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 0
-                this.tilesetXYs.get(0).y[block.index] = 5
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 5
             }
             else if(b_u_l && b_u_r && !b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 4
             }
             else if(!b_u_l && b_u_r && !b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 3
-                this.tilesetXYs.get(0).y[block.index] = 5
+                this.tilesetXYs.get(layer).x[block.index] = 3
+                this.tilesetXYs.get(layer).y[block.index] = 5
             }
             else if(b_u_l && !b_u_r && b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 2
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 4
             }
             else if(!b_u_l && !b_u_r && !b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 4
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
             else if(!b_u_l && !b_u_r && b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 5
-                this.tilesetXYs.get(0).y[block.index] = 0
+                this.tilesetXYs.get(layer).x[block.index] = 5
+                this.tilesetXYs.get(layer).y[block.index] = 0
             }
             else if(!b_u_l && b_u_r && !b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 4
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(b_u_l && !b_u_r && !b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 5
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 5
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(!b_u_l && b_u_r && b_d_l && !b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 5
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 5
+                this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(b_u_l && !b_u_r && !b_d_l && b_d_r) {
-                this.tilesetXYs.get(0).x[block.index] = 4
-                this.tilesetXYs.get(0).y[block.index] = 2
+                this.tilesetXYs.get(layer).x[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 2
             } else {
-                this.tilesetXYs.get(0).x[block.index] = 1
-                this.tilesetXYs.get(0).y[block.index] = 4
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 4
             }
         }
         
         block.is_walk = status
-        this.mapTilesets.get(0).set("block_"+c+"_"+r, block)
+        this.mapTilesets.get(layer).set("block_"+c+"_"+r, block)
 
-        this.floorBlocks.get(0).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(0).x, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(0).y, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(0).x, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(0).y, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(layer).x, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(layer).y, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(layer).x, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(layer).y, 1))
     }
 
     updateSubFloor(c: number, r: number) {
