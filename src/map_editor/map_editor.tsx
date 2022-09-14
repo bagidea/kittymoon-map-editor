@@ -231,7 +231,7 @@ class MapEditor extends CoreEngine {
         })
     }
 
-    subCheckFloor(c: number, r: number, status: boolean = true) {
+    subCheckFloor(c: number, r: number, status: boolean = true, layer: number = 0) {
         const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
 
         const b_u: boolean = r > 0 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r - 1)).is_walk : false
@@ -470,9 +470,7 @@ class MapEditor extends CoreEngine {
         }
     }
 
-    loadedResource() {
-        const b: number = 1 / 6
-
+    createInstancedMesh = (): InstancedMesh => {
         const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
 
         const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
@@ -531,23 +529,27 @@ class MapEditor extends CoreEngine {
         
         floorMaterial.defines = { "USE_UV": "" }
 
-        this.floorBlocks.set(0, new InstancedMesh(floorGeometry, floorMaterial, 10000))
+        return new InstancedMesh(floorGeometry, floorMaterial, 10000)
+    }
 
-        this.getScene().add(this.floorBlocks.get(0))
+    initTilesetMap = (layer: number) => {
+        this.floorBlocks.set(layer, this.createInstancedMesh())
+
+        this.getScene().add(this.floorBlocks.get(layer))
 
         const t_xy: TilesetXY = {
             x: new Int8Array(10000).fill(0),
             y: new Int8Array(10000).fill(0)
         }
 
-        this.tilesetXYs.set(0, t_xy)
+        this.tilesetXYs.set(layer, t_xy)
 
         const b_xy: BlockXY = {
             x: new Float32Array(10000).fill(1 / 6),
             y: new Float32Array(10000).fill(1 / 6)
         }
 
-        this.blockXYs.set(0, b_xy)
+        this.blockXYs.set(layer, b_xy)
 
         let inx: number = 0
 
@@ -555,32 +557,26 @@ class MapEditor extends CoreEngine {
             for(let c: number = 0; c < 100; c++) {
                 const b_name: string = "block_"+c+"_"+r
 
-                this.mapTilesets.get(0).set(
+                this.mapTilesets.get(layer).set(
                     b_name,
                     {
-                        index: inx,
+                        index: inx++,
                         position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
                         is_walk: false
                     }
                 )
-
-                this.mapTilesets.get(1).set(
-                    b_name,
-                    {
-                        index: inx,
-                        position: new Vector3(c * 50 + 25, r * 50 + 25, 0),
-                        is_walk: false
-                    }
-                )
-
-                inx++
             }
         }
 
-        this.floorBlocks.get(0).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(0).x, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(0).y, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(0).x, 1))
-        this.floorBlocks.get(0).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(0).y, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("t_x", new InstancedBufferAttribute(this.tilesetXYs.get(layer).x, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("t_y", new InstancedBufferAttribute(this.tilesetXYs.get(layer).y, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("b_x", new InstancedBufferAttribute(this.blockXYs.get(layer).x, 1))
+        this.floorBlocks.get(layer).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(layer).y, 1))
+
+    }
+
+    loadedResource() {
+        this.initTilesetMap(0)
 
         this.is_start = true
     }
