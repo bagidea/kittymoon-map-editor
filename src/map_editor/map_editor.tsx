@@ -413,15 +413,15 @@ class MapEditor extends CoreEngine {
         this.floorBlocks.get(layer).geometry.setAttribute("b_y", new InstancedBufferAttribute(this.blockXYs.get(layer).y, 1))
     }
 
-    updateSubFloor(c: number, r: number) {
-        const b_u: boolean = r > 0 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r - 1)).is_walk : false
-        const b_d: boolean = r < 99 ? this.mapTilesets.get(0).get("block_"+c+"_"+(r + 1)).is_walk : false
-        const b_l: boolean = c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+r).is_walk : false
-        const b_r: boolean = c < 99 ?this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+r).is_walk : false
-        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
-        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
-        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(0).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
-        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(0).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+    updateSubFloor(c: number, r: number, layer: number = 0) {
+        const b_u: boolean = r > 0 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r - 1)).is_walk : false
+        const b_d: boolean = r < 99 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r + 1)).is_walk : false
+        const b_l: boolean = c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+r).is_walk : false
+        const b_r: boolean = c < 99 ?this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+r).is_walk : false
+        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
+        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
+        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
+        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(b_u) this.subCheckFloor(c, r - 1)
         if(b_d) this.subCheckFloor(c, r + 1)
@@ -433,31 +433,31 @@ class MapEditor extends CoreEngine {
         if(b_d_r) this.subCheckFloor(c + 1, r + 1)
     }
 
-    addFloor(c: number, r: number) {
+    addFloor(c: number, r: number, layer: number = 0) {
         const rotation: Euler = new Euler()
         const quaternion: Quaternion = new Quaternion()
 
         rotation.y = rotation.z = MathUtils.degToRad(180)
         quaternion.setFromEuler(rotation)
 
-        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
+        const block: MapTilesetData = this.mapTilesets.get(layer).get("block_"+c+"_"+r)
 
         this.matrix.compose(block.position, quaternion, new Vector3(1, 1, 1))
-        this.floorBlocks.get(0).setMatrixAt(block.index, this.matrix)
-        this.floorBlocks.get(0).instanceMatrix.needsUpdate = true
+        this.floorBlocks.get(layer).setMatrixAt(block.index, this.matrix)
+        this.floorBlocks.get(layer).instanceMatrix.needsUpdate = true
 
-        this.subCheckFloor(c, r)
-        this.updateSubFloor(c, r)
+        this.subCheckFloor(c, r, true, layer)
+        this.updateSubFloor(c, r, layer)
     }
 
-    removeFloor(c: number, r: number) {
-        const block: MapTilesetData = this.mapTilesets.get(0).get("block_"+c+"_"+r)
+    removeFloor(c: number, r: number, layer: number = 0) {
+        const block: MapTilesetData = this.mapTilesets.get(layer).get("block_"+c+"_"+r)
 
-        this.floorBlocks.get(0).setMatrixAt(block.index, new Matrix4())
-        this.floorBlocks.get(0).instanceMatrix.needsUpdate = true
+        this.floorBlocks.get(layer).setMatrixAt(block.index, new Matrix4())
+        this.floorBlocks.get(layer).instanceMatrix.needsUpdate = true
 
-        this.subCheckFloor(c, r, false)
-        this.updateSubFloor(c, r)
+        this.subCheckFloor(c, r, false, layer)
+        this.updateSubFloor(c, r, layer)
     }
 
     laterUpdate() {
@@ -577,6 +577,7 @@ class MapEditor extends CoreEngine {
 
     loadedResource() {
         this.initTilesetMap(0)
+        this.initTilesetMap(1)
 
         this.is_start = true
     }
