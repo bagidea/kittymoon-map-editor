@@ -244,43 +244,68 @@ class MapEditor extends CoreEngine {
         const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
 
         if(!b_u && !b_d && !b_l && !b_r) {
-            this.tilesetXYs.get(layer).x[block.index] = 0
-            this.tilesetXYs.get(layer).y[block.index] = 3
-        }
-        else if(b_u && !b_d && !b_l && !b_r) {
-            if(b_u_l && b_u_r /*&& !b_d_l && !b_d_r*/) {
-                this.tilesetXYs.get(layer).x[block.index] = 1
-                this.tilesetXYs.get(layer).y[block.index] = 5
+            if(layer == 0) {
+                this.tilesetXYs.get(layer).x[block.index] = 3
+                this.tilesetXYs.get(layer).y[block.index] = 2
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 0
-                this.tilesetXYs.get(layer).y[block.index] = 2
+                this.tilesetXYs.get(layer).y[block.index] = 3
+            }
+        }
+        else if(b_u && !b_d && !b_l && !b_r) {
+            if(layer == 0) {
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 5
+            } else {
+                if(b_u_l && b_u_r /*&& !b_d_l && !b_d_r*/) {
+                    this.tilesetXYs.get(layer).x[block.index] = 1
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 0
+                    this.tilesetXYs.get(layer).y[block.index] = 2
+                }
             }
         }
         else if(!b_u && b_d && !b_l && !b_r) {
-            if(/*!b_u_l && !b_u_r &&*/ b_d_l && b_d_r) {
+            if(layer == 0) {
                 this.tilesetXYs.get(layer).x[block.index] = 0
-                this.tilesetXYs.get(layer).y[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 2
             } else {
-                this.tilesetXYs.get(layer).x[block.index] = 0
-                this.tilesetXYs.get(layer).y[block.index] = 0
+                if(/*!b_u_l && !b_u_r &&*/ b_d_l && b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 0
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 0
+                    this.tilesetXYs.get(layer).y[block.index] = 0
+                }
             }
         }
         else if(!b_u && !b_d && b_l && !b_r) {
-            if(/*!b_u_l && !b_u_r &&*/ b_d_l /*&& !b_d_r*/) {
+            if(layer == 0) {
                 this.tilesetXYs.get(layer).x[block.index] = 3
-                this.tilesetXYs.get(layer).y[block.index] = 4
+                this.tilesetXYs.get(layer).y[block.index] = 6
             } else {
-                this.tilesetXYs.get(layer).x[block.index] = 3
-                this.tilesetXYs.get(layer).y[block.index] = 3
+                if(/*!b_u_l && !b_u_r &&*/ b_d_l /*&& !b_d_r*/) {
+                    this.tilesetXYs.get(layer).x[block.index] = 3
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 3
+                    this.tilesetXYs.get(layer).y[block.index] = 3
+                }
             }
         }
         else if(!b_u && !b_d && !b_l && b_r) {
-            if(/*!b_u_l && !b_u_r && !b_d_l &&*/ b_d_r) {
-                this.tilesetXYs.get(layer).x[block.index] = 2
-                this.tilesetXYs.get(layer).y[block.index] = 5
+            if(layer == 0) {
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 6
             } else {
-                this.tilesetXYs.get(layer).x[block.index] = 1
-                this.tilesetXYs.get(layer).y[block.index] = 3
+                if(/*!b_u_l && !b_u_r && !b_d_l &&*/ b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 2
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 1
+                    this.tilesetXYs.get(layer).y[block.index] = 3
+                }
             }
         }
         else if(b_u && !b_d && b_l && !b_r) {
@@ -460,7 +485,7 @@ class MapEditor extends CoreEngine {
         this.updateSubFloor(c, r, layer)
     }
 
-    createInstancedMesh = (tex: Texture): InstancedMesh => {
+    createInstancedMesh = (tex: Texture, last_y: number = 5): InstancedMesh => {
         const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
 
         const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
@@ -470,6 +495,7 @@ class MapEditor extends CoreEngine {
 
         floorMaterial.onBeforeCompile = (shader: Shader) => {
             shader.uniforms.texAtlas = { value: tex }
+            shader.uniforms.l_y = { value: last_y }
 
             shader.vertexShader = `
                 attribute float t_x;
@@ -495,6 +521,7 @@ class MapEditor extends CoreEngine {
 
             shader.fragmentShader = `
                 uniform sampler2D texAtlas;
+                uniform float l_y;
 
                 varying float vT_x;
                 varying float vT_y;
@@ -508,7 +535,7 @@ class MapEditor extends CoreEngine {
 
                     vec2 blockUv = vec2(
                         vB_x * (vUv.x + vT_x),
-                        vB_y * (vUv.y + (5.0f - vT_y))
+                        vB_y * (vUv.y + (l_y - vT_y))
                     ); 
 
                     vec4 blockColor = texture(texAtlas, blockUv);
@@ -522,8 +549,8 @@ class MapEditor extends CoreEngine {
         return new InstancedMesh(floorGeometry, floorMaterial, 10000)
     }
 
-    initTilesetMap = (layer: number, tex: Texture) => {
-        this.floorBlocks.set(layer, this.createInstancedMesh(tex))
+    initTilesetMap = (layer: number, tex: Texture, b_x: number = 1 / 6, b_y: number = 1 / 6, last_y: number = 5) => {
+        this.floorBlocks.set(layer, this.createInstancedMesh(tex, last_y))
 
         this.getScene().add(this.floorBlocks.get(layer))
 
@@ -535,8 +562,8 @@ class MapEditor extends CoreEngine {
         this.tilesetXYs.set(layer, t_xy)
 
         const b_xy: BlockXY = {
-            x: new Float32Array(10000).fill(1 / 6),
-            y: new Float32Array(10000).fill(1 / 6)
+            x: new Float32Array(10000).fill(b_x),
+            y: new Float32Array(10000).fill(b_y)
         }
 
         this.blockXYs.set(layer, b_xy)
@@ -566,7 +593,7 @@ class MapEditor extends CoreEngine {
     }
 
     loadedResource() {
-        this.initTilesetMap(0, this.texs.get("Grass"))
+        this.initTilesetMap(0, this.texs.get("Grass"), 1 / 10, 1 / 8, 7)
         this.initTilesetMap(1, this.texs.get("Hills"))
 
         this.is_start = true
@@ -574,12 +601,14 @@ class MapEditor extends CoreEngine {
 
     createFloor() {
         this.loadTexture("/tilesets/Grass.png", (i: Texture) => {
-            const b: number = 1 / 6
+            const b_x: number = 1 / 10
+            const b_y: number = 1 / 8
 
             const tex: Texture = i
             tex.magFilter = NearestFilter
-            tex.repeat.x = tex.repeat.y = b
-            tex.offset.set(b * 0, (1 - b) - b * 0)
+            tex.repeat.x = b_x
+            tex.repeat.y = b_y
+            tex.offset.set(b_x * 0, (1 - b_y) - b_y * 0)
 
             this.texs.set("Grass", tex)
             this.resources_count++
@@ -731,12 +760,14 @@ class MapEditor extends CoreEngine {
     mapCreator() {
         if(!this.is_start) return
 
+        const k_ctrl: boolean = this.keyPress.get("Control")
+
         switch(this.mapActionState) {
             case "add":
-                this.addFloor(this.pointer.x, this.pointer.y, 1)
+                this.addFloor(this.pointer.x, this.pointer.y, k_ctrl ? 1 : 0)
                 break
             case "remove":
-                this.removeFloor(this.pointer.x, this.pointer.y, 1)
+                this.removeFloor(this.pointer.x, this.pointer.y, k_ctrl ? 1 : 0)
                 break
             default:
         }
