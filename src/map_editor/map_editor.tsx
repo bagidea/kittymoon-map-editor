@@ -338,8 +338,13 @@ class MapEditor extends CoreEngine {
             }
         }
         else if(b_u && b_d && !b_l && !b_r) {
-            this.tilesetXYs.get(layer).x[block.index] = 0
-            this.tilesetXYs.get(layer).y[block.index] = 1
+            if(layer == 0) {
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 3
+            } else {
+                this.tilesetXYs.get(layer).x[block.index] = 0
+                this.tilesetXYs.get(layer).y[block.index] = 1
+            }
         }
         else if(b_u && b_d && b_l && !b_r) {
             if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
@@ -360,8 +365,13 @@ class MapEditor extends CoreEngine {
             }
         }
         else if(!b_u && !b_d && b_l && b_r) {
-            this.tilesetXYs.get(layer).x[block.index] = 2
-            this.tilesetXYs.get(layer).y[block.index] = 3
+            if(layer == 0) {
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 6
+            } else {
+                this.tilesetXYs.get(layer).x[block.index] = 1
+                this.tilesetXYs.get(layer).y[block.index] = 3
+            }
         }
         else if(b_u && b_d && b_l && b_r) {
             if(b_u_l && b_u_r && b_d_l && b_d_r) {
