@@ -310,7 +310,7 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && !b_d && b_l && !b_r) {
             if(layer == 0) {
-                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                if(!b_u_l /*&& !b_u_r && !b_d_l && !b_d_r*/) {
                     this.tilesetXYs.get(layer).x[block.index] = 5
                     this.tilesetXYs.get(layer).y[block.index] = 7
                 } else {
@@ -324,7 +324,7 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && !b_d && !b_l && b_r) {
             if(layer == 0) {
-                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                if(/*!b_u_l &&*/ !b_u_r /*&& !b_d_l && !b_d_r*/) {
                     this.tilesetXYs.get(layer).x[block.index] = 4
                     this.tilesetXYs.get(layer).y[block.index] = 7
                 } else {
@@ -360,7 +360,7 @@ class MapEditor extends CoreEngine {
         }
         else if(!b_u && b_d && b_l && !b_r) {
             if(layer == 0) {
-                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                if(/*!b_u_l && !b_u_r &&*/ !b_d_l /*&& !b_d_r*/) {
                     this.tilesetXYs.get(layer).x[block.index] = 5
                     this.tilesetXYs.get(layer).y[block.index] = 6
                 } else {
@@ -374,7 +374,7 @@ class MapEditor extends CoreEngine {
         }
         else if(!b_u && b_d && !b_l && b_r) {
             if(layer == 0) {
-                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                if(/*!b_u_l && !b_u_r && !b_d_l &&*/ !b_d_r) {
                     this.tilesetXYs.get(layer).x[block.index] = 4
                     this.tilesetXYs.get(layer).y[block.index] = 6
                 } else {
@@ -601,8 +601,13 @@ class MapEditor extends CoreEngine {
                     this.tilesetXYs.get(layer).y[block.index] = 2
                 }
             } else {
-                this.tilesetXYs.get(layer).x[block.index] = 1
-                this.tilesetXYs.get(layer).y[block.index] = 4
+                if(layer == 0) {
+                    this.tilesetXYs.get(layer).x[block.index] = 0
+                    this.tilesetXYs.get(layer).y[block.index] = 7
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 1
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                }
             }
         }
         
