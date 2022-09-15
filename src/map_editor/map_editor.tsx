@@ -310,8 +310,13 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && !b_d && b_l && !b_r) {
             if(layer == 0) {
-                this.tilesetXYs.get(layer).x[block.index] = 3
-                this.tilesetXYs.get(layer).y[block.index] = 5
+                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 5
+                    this.tilesetXYs.get(layer).y[block.index] = 7
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 3
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 3
                 this.tilesetXYs.get(layer).y[block.index] = 2
@@ -319,8 +324,13 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && !b_d && !b_l && b_r) {
             if(layer == 0) {
-                this.tilesetXYs.get(layer).x[block.index] = 1
-                this.tilesetXYs.get(layer).y[block.index] = 5
+                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 4
+                    this.tilesetXYs.get(layer).y[block.index] = 7
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 1
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 1
                 this.tilesetXYs.get(layer).y[block.index] = 2
@@ -328,7 +338,15 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && !b_d && b_l && b_r) {
             if(layer == 0) {
-                if(!b_u_l && !b_u_r /*&& b_d_l && !b_d_r*/) {
+                if(!b_u_l && b_u_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 6
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
+                else if(b_u_l && !b_u_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 9
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
+                else if(!b_u_l && !b_u_r /*&& b_d_l && !b_d_r*/) {
                     this.tilesetXYs.get(layer).x[block.index] = 9
                     this.tilesetXYs.get(layer).y[block.index] = 2
                 } else {
@@ -342,8 +360,13 @@ class MapEditor extends CoreEngine {
         }
         else if(!b_u && b_d && b_l && !b_r) {
             if(layer == 0) {
-                this.tilesetXYs.get(layer).x[block.index] = 3
-                this.tilesetXYs.get(layer).y[block.index] = 3
+                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 5
+                    this.tilesetXYs.get(layer).y[block.index] = 6
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 3
+                    this.tilesetXYs.get(layer).y[block.index] = 3
+                }
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 3
                 this.tilesetXYs.get(layer).y[block.index] = 0
@@ -351,8 +374,13 @@ class MapEditor extends CoreEngine {
         }
         else if(!b_u && b_d && !b_l && b_r) {
             if(layer == 0) {
-                this.tilesetXYs.get(layer).x[block.index] = 1
-                this.tilesetXYs.get(layer).y[block.index] = 3
+                if(!b_u_l && !b_u_r && !b_d_l && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 4
+                    this.tilesetXYs.get(layer).y[block.index] = 6
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 1
+                    this.tilesetXYs.get(layer).y[block.index] = 3
+                }
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 1
                 this.tilesetXYs.get(layer).y[block.index] = 0
@@ -360,7 +388,15 @@ class MapEditor extends CoreEngine {
         }
         else if(!b_u && b_d && b_l && b_r) {
             if(layer == 0) {
-                if(/*!b_u_l && !b_u_r &&*/ !b_d_l && !b_d_r) {
+                if(!b_d_l && b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 8
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                }
+                else if(b_d_l && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 7
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                }
+                else if(/*!b_u_l && !b_u_r &&*/ !b_d_l && !b_d_r) {
                     this.tilesetXYs.get(layer).x[block.index] = 8
                     this.tilesetXYs.get(layer).y[block.index] = 3
                 } else {
@@ -388,7 +424,15 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && b_d && b_l && !b_r) {
             if(layer == 0) {
-                if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
+                if(!b_u_l && b_d_l) {
+                    this.tilesetXYs.get(layer).x[block.index] = 9
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                }
+                else if(b_u_l && !b_d_l) {
+                    this.tilesetXYs.get(layer).x[block.index] = 7
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
+                else if(!b_u_l /*&& b_u_r*/ && !b_d_l /*&& !b_d_r*/) {
                     this.tilesetXYs.get(layer).x[block.index] = 8
                     this.tilesetXYs.get(layer).y[block.index] = 2
                 } else {
@@ -407,7 +451,15 @@ class MapEditor extends CoreEngine {
         }
         else if(b_u && b_d && !b_l && b_r) {
             if(layer == 0) {
-                if(/*b_u_l &&*/ !b_u_r /*&& b_d_l*/ && !b_d_r) {
+                if(!b_u_r && b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 6
+                    this.tilesetXYs.get(layer).y[block.index] = 4
+                }
+                else if(b_u_r && !b_d_r) {
+                    this.tilesetXYs.get(layer).x[block.index] = 8
+                    this.tilesetXYs.get(layer).y[block.index] = 5
+                }
+                else if(/*b_u_l &&*/ !b_u_r /*&& b_d_l*/ && !b_d_r) {
                     this.tilesetXYs.get(layer).x[block.index] = 9
                     this.tilesetXYs.get(layer).y[block.index] = 3
                 } else {
@@ -532,12 +584,22 @@ class MapEditor extends CoreEngine {
                 this.tilesetXYs.get(layer).y[block.index] = 2
             }
             else if(!b_u_l && b_u_r && b_d_l && !b_d_r) {
-                this.tilesetXYs.get(layer).x[block.index] = 5
-                this.tilesetXYs.get(layer).y[block.index] = 2
+                if(layer == 0) {
+                    this.tilesetXYs.get(layer).x[block.index] = 3
+                    this.tilesetXYs.get(layer).y[block.index] = 7
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 5
+                    this.tilesetXYs.get(layer).y[block.index] = 2
+                }
             }
             else if(b_u_l && !b_u_r && !b_d_l && b_d_r) {
-                this.tilesetXYs.get(layer).x[block.index] = 4
-                this.tilesetXYs.get(layer).y[block.index] = 2
+                if(layer == 0) {
+                    this.tilesetXYs.get(layer).x[block.index] = 2
+                    this.tilesetXYs.get(layer).y[block.index] = 7
+                } else {
+                    this.tilesetXYs.get(layer).x[block.index] = 4
+                    this.tilesetXYs.get(layer).y[block.index] = 2
+                }
             } else {
                 this.tilesetXYs.get(layer).x[block.index] = 1
                 this.tilesetXYs.get(layer).y[block.index] = 4
