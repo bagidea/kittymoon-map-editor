@@ -12,7 +12,6 @@ import {
     PlaneGeometry,
     Quaternion,
     RepeatWrapping,
-    Shader,
     Texture,
     Vector2,
     Vector3
@@ -64,6 +63,8 @@ class MapEditor extends CoreEngine {
     private tilesetXYs: Map<number, TilesetXY>
     private blockXYs: Map<number, BlockXY>
 
+    private view_mode: string
+
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
 
@@ -96,6 +97,8 @@ class MapEditor extends CoreEngine {
         this.floorBlocks = new Map<number, InstancedMesh>()
         this.tilesetXYs = new Map<number, TilesetXY>()
         this.blockXYs = new Map<number, BlockXY>()
+
+        this.view_mode = "all"
     }
 
     onWindowResize = () => {
@@ -431,6 +434,21 @@ class MapEditor extends CoreEngine {
                 break
             case "KeyG":
                 this.keyPress.set("KeyG", true)
+                break
+            case "Digit1":
+                this.view_mode = "all";
+                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 1.0;
+                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 1.0;
+                break
+            case "Digit2":
+                this.view_mode = "layer0";
+                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 1.0;
+                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 0.5;
+                break
+            case "Digit3":
+                this.view_mode = "layer1";
+                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 0.5;
+                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 1.0;
                 break
         }
     }
