@@ -147,16 +147,10 @@ class MapEditor extends CoreEngine {
     onMouseUp = (e: MouseEvent) => {
         switch(e.which) {
             case 1:
-                if(this.mapActionState == "add") {
-                    this.mapActionState = ""
-                    //this.laterUpdate()
-                }
+                if(this.mapActionState == "add") this.mapActionState = ""
                 break
             case 3:
-                if(this.mapActionState == "remove") {
-                    this.mapActionState = ""
-                    //this.laterUpdate()
-                }
+                if(this.mapActionState == "remove") this.mapActionState = ""
                 break
             default:
         }
