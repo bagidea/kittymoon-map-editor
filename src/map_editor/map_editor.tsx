@@ -223,9 +223,7 @@ class MapEditor extends CoreEngine {
         })
     }
 
-    subCheckFloor(c: number, r: number, status: boolean = true, layer: number = 0) {
-        const block: MapTilesetData = this.mapTilesets.get(layer).get("block_"+c+"_"+r)
-
+    getIsWalk = (c: number, r: number, layer: number): Array<boolean> => {
         const b_u: boolean = r > 0 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r - 1)).is_walk : false
         const b_d: boolean = r < 99 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r + 1)).is_walk : false
         const b_l: boolean = c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+r).is_walk : false
@@ -234,6 +232,13 @@ class MapEditor extends CoreEngine {
         const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
         const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
         const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+
+        return new Array<boolean>(b_u, b_d, b_l, b_r, b_u_l, b_u_r, b_d_l, b_d_r)
+    }
+
+    subCheckFloor(c: number, r: number, status: boolean = true, layer: number = 0) {
+        const block: MapTilesetData = this.mapTilesets.get(layer).get("block_"+c+"_"+r)
+        const [b_u, b_d, b_l, b_r, b_u_l, b_u_r, b_d_l, b_d_r] = this.getIsWalk(c, r, layer)
 
         CheckPattern(this.tilesetXYs.get(layer), block, b_u, b_d, b_l, b_r, b_u_l, b_u_r, b_d_l, b_d_r, layer)
         
@@ -247,14 +252,7 @@ class MapEditor extends CoreEngine {
     }
 
     updateSubFloor(c: number, r: number, layer: number = 0) {
-        const b_u: boolean = r > 0 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r - 1)).is_walk : false
-        const b_d: boolean = r < 99 ? this.mapTilesets.get(layer).get("block_"+c+"_"+(r + 1)).is_walk : false
-        const b_l: boolean = c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+r).is_walk : false
-        const b_r: boolean = c < 99 ?this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+r).is_walk : false
-        const b_u_l: boolean = r > 0 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r - 1)).is_walk : false
-        const b_u_r: boolean = r > 0 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r - 1)).is_walk : false
-        const b_d_l: boolean = r < 99 && c > 0 ? this.mapTilesets.get(layer).get("block_"+(c - 1)+"_"+(r + 1)).is_walk : false
-        const b_d_r: boolean = r < 99 && c < 99 ? this.mapTilesets.get(layer).get("block_"+(c + 1)+"_"+(r + 1)).is_walk : false
+        const [b_u, b_d, b_l, b_r, b_u_l, b_u_r, b_d_l, b_d_r] = this.getIsWalk(c, r, layer)
 
         if(b_u) this.subCheckFloor(c, r - 1, true, layer)
         if(b_d) this.subCheckFloor(c, r + 1, true, layer)
