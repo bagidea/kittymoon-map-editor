@@ -23,23 +23,14 @@ import {
     CSS2DObject
 } from "three/examples/jsm/renderers/CSS2DRenderer"
 
+import {
+    MapTilesetData,
+    TilesetXY,
+    BlockXY
+} from "./map_interface"
+
 import CoreEngine from "../core3d/core_engine"
-
-interface MapTilesetData {
-    index: number,
-    position: Vector3,
-    is_walk: boolean
-}
-
-interface TilesetXY {
-    x: Int8Array,
-    y: Int8Array
-}
-
-interface BlockXY {
-    x: Float32Array,
-    y: Float32Array
-}
+import CreateInstancedMesh from "./map_instanced_mesh_custom"
 
 class MapEditor extends CoreEngine {
     private frame: HTMLDivElement
@@ -687,72 +678,8 @@ class MapEditor extends CoreEngine {
         this.updateSubFloor(c, r, layer)
     }
 
-    createInstancedMesh = (tex: Texture, last_y: number = 5): InstancedMesh => {
-        const floorGeometry: PlaneGeometry = new PlaneGeometry(50, 50, 1, 1)
-
-        const floorMaterial: MeshBasicMaterial = new MeshBasicMaterial({
-            color: 0xffffff,
-            transparent: true
-        })
-
-        floorMaterial.onBeforeCompile = (shader: Shader) => {
-            shader.uniforms.texAtlas = { value: tex }
-            shader.uniforms.l_y = { value: last_y }
-
-            shader.vertexShader = `
-                attribute float t_x;
-                attribute float t_y;
-                attribute float b_x;
-                attribute float b_y;
-
-                varying float vT_x;
-                varying float vT_y;
-                varying float vB_x;
-                varying float vB_y;
-
-                ${shader.vertexShader}
-            `.replace(
-                `void main() {`,
-                `void main() {
-                    vT_x = t_x;
-                    vT_y = t_y;
-                    vB_x = b_x;
-                    vB_y = b_y;
-                `
-            ),
-
-            shader.fragmentShader = `
-                uniform sampler2D texAtlas;
-                uniform float l_y;
-
-                varying float vT_x;
-                varying float vT_y;
-                varying float vB_x;
-                varying float vB_y;
-
-                ${shader.fragmentShader}
-            `.replaceAll(
-                `#include <map_fragment>`,
-                `#include <map_fragment>
-
-                    vec2 blockUv = vec2(
-                        vB_x * (vUv.x + vT_x),
-                        vB_y * (vUv.y + (l_y - vT_y))
-                    ); 
-
-                    vec4 blockColor = texture(texAtlas, blockUv);
-                    diffuseColor *= blockColor;
-                `
-            )
-        }
-        
-        floorMaterial.defines = { "USE_UV": "" }
-
-        return new InstancedMesh(floorGeometry, floorMaterial, 10000)
-    }
-
     initTilesetMap = (layer: number, tex: Texture, b_x: number = 1 / 6, b_y: number = 1 / 6, last_y: number = 5) => {
-        this.floorBlocks.set(layer, this.createInstancedMesh(tex, last_y))
+        this.floorBlocks.set(layer, CreateInstancedMesh(tex, last_y))
 
         this.getScene().add(this.floorBlocks.get(layer))
 
