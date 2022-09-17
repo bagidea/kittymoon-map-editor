@@ -412,6 +412,10 @@ class MapEditor extends CoreEngine {
         this.createFloor()
     }
 
+    setMaterialOpacity(layer: number, value: number) {
+        (this.floorBlocks.get(layer).material as MeshBasicMaterial).opacity = value
+    }
+
     keydown = (e: KeyboardEvent) => {
         switch(e.code) {
             case "ArrowUp":
@@ -437,18 +441,18 @@ class MapEditor extends CoreEngine {
                 break
             case "Digit1":
                 this.view_mode = "all";
-                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 1.0;
-                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 1.0;
+                this.setMaterialOpacity(0, 1.0)
+                this.setMaterialOpacity(1, 1.0)
                 break
             case "Digit2":
                 this.view_mode = "layer0";
-                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 1.0;
-                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 0.5;
+                this.setMaterialOpacity(0, 1.0)
+                this.setMaterialOpacity(1, 0.5)
                 break
             case "Digit3":
                 this.view_mode = "layer1";
-                (this.floorBlocks.get(0).material as MeshBasicMaterial).opacity = 0.5;
-                (this.floorBlocks.get(1).material as MeshBasicMaterial).opacity = 1.0;
+                this.setMaterialOpacity(0, 0.5)
+                this.setMaterialOpacity(1, 1.0)
                 break
         }
     }
