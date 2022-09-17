@@ -52,8 +52,10 @@ class MapEditor extends CoreEngine {
     private water: Texture
     private texs: Map<string, Texture>
 
+    private resources: Array<string>
     private resources_count: number
     private resources_max: number
+
     private is_start: boolean
 
     private mapTilesets: Map<number, Map<string, MapTilesetData>>
@@ -72,8 +74,16 @@ class MapEditor extends CoreEngine {
         this.key_g_down = false
         this.mapActionState = ""
 
+        this.resources = new Array<string>(
+            "/tilesets/water frames/Water_1.png",
+            "/tilesets/Grass.png",
+            "/tilesets/Hills.png",
+            "/tilesets/TilledDirt.png"
+        )
+
         this.resources_count = 0
-        this.resources_max = 3
+        this.resources_max = this.resources.length
+
         this.is_start = false
 
         this.keyPress = new Map<string, boolean>()
@@ -204,7 +214,8 @@ class MapEditor extends CoreEngine {
     }
 
     createWater() {
-        this.loadTexture("/tilesets/water frames/Water_1.png", (i: Texture) => {
+        // Water
+        this.loadTexture(this.resources[0], (i: Texture) => {
             this.water = i
             this.water.magFilter = NearestFilter
             this.water.wrapS = this.water.wrapT = RepeatWrapping
@@ -220,6 +231,9 @@ class MapEditor extends CoreEngine {
             waterMesh.rotation.y = MathUtils.degToRad(180)
 
             this.getScene().add(waterMesh)
+
+            this.resources_count++
+            if(this.resources_count >= this.resources_max) this.loadedResource()
         })
     }
 
@@ -342,7 +356,8 @@ class MapEditor extends CoreEngine {
     }
 
     createFloor() {
-        this.loadTexture("/tilesets/Grass.png", (i: Texture) => {
+        // Grass
+        this.loadTexture(this.resources[1], (i: Texture) => {
             const b_x: number = 1 / 10
             const b_y: number = 1 / 8
 
@@ -353,12 +368,13 @@ class MapEditor extends CoreEngine {
             tex.offset.set(b_x * 0, (1 - b_y) - b_y * 0)
 
             this.texs.set("Grass", tex)
-            this.resources_count++
 
+            this.resources_count++
             if(this.resources_count >= this.resources_max) this.loadedResource()
         })
 
-        this.loadTexture("/tilesets/Hills.png", (i: Texture) => {
+        // Hills
+        this.loadTexture(this.resources[2], (i: Texture) => {
             const b: number = 1 / 6
 
             const tex: Texture = i
@@ -367,12 +383,13 @@ class MapEditor extends CoreEngine {
             tex.offset.set(b * 0, (1 - b) - b * 0)
 
             this.texs.set("Hills", tex)
-            this.resources_count++
 
+            this.resources_count++
             if(this.resources_count >= this.resources_max) this.loadedResource()
         })
 
-        this.loadTexture("/tilesets/TilledDirt.png", (i: Texture) => {
+        // TilledDirt
+        this.loadTexture(this.resources[3], (i: Texture) => {
             const b: number = 1 / 6
 
             const tex: Texture = i
@@ -381,8 +398,8 @@ class MapEditor extends CoreEngine {
             tex.offset.set(b * 0, (1 - b) - b * 0)
 
             this.texs.set("TilledDirt", tex)
-            this.resources_count++
 
+            this.resources_count++
             if(this.resources_count >= this.resources_max) this.loadedResource()
         })
     }
