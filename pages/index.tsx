@@ -10,18 +10,28 @@ import {
 import {
     MutableRefObject,
     useEffect,
-    useRef,
-    useState
+    useRef
 } from "react"
 
 import MapEditor from "../src/map_editor/map_editor"
 
+const view_style = {
+    w: "20px",
+    h: "20px",
+    bgColor: "white",
+    color: "black",
+    alignItems: "center",
+    justifyContent: "center",
+    rounded: "full"
+}
+
 const Index = () => {
     const canvas: MutableRefObject<HTMLCanvasElement> = useRef<HTMLCanvasElement>(null)
     const frame: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
+    const stats: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const game: MapEditor = new MapEditor(canvas.current, frame.current)
+        const game: MapEditor = new MapEditor(canvas.current, frame.current, stats.current)
 
         game.init()
         game.setup()
@@ -66,44 +76,40 @@ const Index = () => {
                     >
                         <Flex
                             id="v_1"
-                            w="20px"
-                            h="20px"
-                            bgColor="white"
-                            color="black"
-                            alignItems="center"
-                            justifyContent="center"
-                            rounded="full"
-                        >
-                            <Text>1</Text>
-                        </Flex>
+                            { ...view_style }
+                        ><Text>1</Text></Flex>
 
                         <Flex
                             id="v_2"
-                            w="20px"
-                            h="20px"
-                            bgColor="white"
-                            color="black"
-                            alignItems="center"
-                            justifyContent="center"
-                            rounded="full"
-                        >
-                            <Text>2</Text>
-                        </Flex>
+                            { ...view_style }
+                        ><Text>2</Text></Flex>
 
                         <Flex
                             id="v_3"
-                            w="20px"
-                            h="20px"
-                            bgColor="white"
-                            color="black"
-                            alignItems="center"
-                            justifyContent="center"
-                            rounded="full"
-                        >
-                            <Text>3</Text>
-                        </Flex>
+                            { ...view_style }
+                        ><Text>3</Text></Flex>
                     </HStack>
                 </HStack>
+            </Flex>
+
+            <Flex
+                position="absolute"
+                top="90px"
+                left="60px"
+                padding="10px"
+                backdropFilter="blur(4px)"
+                alignItems="center"
+                justifyContent="center"
+                bgColor="red"
+                w="80px"
+                h="40px"
+                cursor="pointer"
+                userSelect="auto"
+                zIndex="99"
+            >
+                <Flex
+                    ref={ stats }
+                />
             </Flex>
 
             <Flex

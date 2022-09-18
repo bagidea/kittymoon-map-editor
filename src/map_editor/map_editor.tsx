@@ -17,6 +17,8 @@ import {
     Vector3
 } from "three"
 
+import Stats from "three/examples/jsm/libs/stats.module"
+
 import {
     CSS2DRenderer,
     CSS2DObject
@@ -33,6 +35,9 @@ import CreateInstancedMesh from "./map_instanced_mesh_custom"
 import CheckPattern from "./map_check_pattern"
 
 class MapEditor extends CoreEngine {
+    private stats_container: HTMLDivElement
+    private stats: Stats
+
     private frame: HTMLDivElement
     private keyPress: Map<string, boolean>
     private pointer: Vector2
@@ -66,10 +71,11 @@ class MapEditor extends CoreEngine {
     private view_mode: string
     private view_stetes: Map<string, HTMLElement>
 
-    constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
+    constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement, stats_container: HTMLDivElement) {
         super(canvas)
 
         this.frame = frame
+        this.stats_container = stats_container
 
         this.c_x = 0
         this.c_y = 0
@@ -211,6 +217,9 @@ class MapEditor extends CoreEngine {
         window.addEventListener("pointermove", this.onPointerMove)
         document.addEventListener('mousedown', this.onMouseDown)
         document.addEventListener('mouseup', this.onMouseUp)
+
+        this.stats = Stats()
+        this.stats_container.append(this.stats.dom)
 
         this.css2dSetup()
         this.setUpdateFunction(this.loop)
@@ -579,6 +588,8 @@ class MapEditor extends CoreEngine {
 
         this.controls(tmr, w, h)
         this.mapCreator()
+
+        this.stats.update()
     }
 
     afterRender(deltaTime: number) {
