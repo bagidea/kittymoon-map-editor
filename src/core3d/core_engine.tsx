@@ -74,6 +74,7 @@ class CoreEngine {
     setUpdateFunction(updateFunction: (deltaTime: number) => void) { this.update = updateFunction }
     setAfterUpdateFunction(afterUpdateFunction: (deltaTime: number) => void) { this.after_update = afterUpdateFunction }
 
+    getCanvas(): HTMLCanvasElement { return this.canvas }
     getScene(): Scene { return this.scene }
     getCamera(): OrthographicCamera { return this.camera }
     getDeltaTime(): number { return this.clock.getDelta() }

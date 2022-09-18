@@ -215,8 +215,8 @@ class MapEditor extends CoreEngine {
 
         window.addEventListener("resize", this.onWindowResize)
         window.addEventListener("pointermove", this.onPointerMove)
-        document.addEventListener('mousedown', this.onMouseDown)
-        document.addEventListener('mouseup', this.onMouseUp)
+        this.getCanvas().addEventListener('mousedown', this.onMouseDown)
+        this.getCanvas().addEventListener('mouseup', this.onMouseUp)
 
         this.stats = Stats()
         this.stats_container.append(this.stats.dom)
