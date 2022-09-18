@@ -189,6 +189,8 @@ class MapEditor extends CoreEngine {
         this.css2dRenderer.domElement.style.position = "absolute"
         this.css2dRenderer.domElement.style.top = "0px"
         this.css2dRenderer.domElement.style.left = "0px"
+        this.css2dRenderer.domElement.style.userSelect = "none"
+        this.css2dRenderer.domElement.style.pointerEvents = "none"
 
         document.body.appendChild(this.css2dRenderer.domElement)
     }

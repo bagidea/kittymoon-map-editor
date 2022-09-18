@@ -60,6 +60,7 @@ const Index = () => {
                 rounded="full"
                 alignItems="center"
                 justifyContent="center"
+                pointerEvents="none"
             >
                 <HStack>
                     <Flex>
@@ -116,6 +117,7 @@ const Index = () => {
                 position="absolute"
                 top="20px"
                 right="20px"
+                pointerEvents="none"
             >
                 <VStack
                     spacing="0px"
@@ -153,6 +155,7 @@ const Index = () => {
                 fontWeight="600"
                 color="white"
                 textShadow="1px 1px 2px #909090"
+                pointerEvents="none"
             >
                 <VStack
                     spacing="5px"
