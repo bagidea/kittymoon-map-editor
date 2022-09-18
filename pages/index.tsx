@@ -41,10 +41,15 @@ const Index = () => {
             <Flex
                 position="absolute"
                 w="200px"
-                bottom="250px"
+                py="20px"
+                bottom="240px"
                 left="30px"
                 fontSize="14px"
                 fontWeight="600"
+                color="white"
+                textShadow="1px 1px 2px #606060"
+                rounded="8px"
+                backdropFilter="blur(4px)"
             >
                 <VStack
                     spacing="5px"
