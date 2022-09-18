@@ -41,17 +41,23 @@ const Index = () => {
             <Flex
                 position="absolute"
                 w="200px"
-                bottom="240px"
+                bottom="250px"
                 left="30px"
                 fontSize="14px"
+                fontWeight="600"
             >
                 <VStack
-                    spacing="0px"
+                    spacing="5px"
                     w="full"
                 >
                     <Text>Move - up, down, left, right</Text>
-                    <Text>Move fast - hold shift</Text>
+                    <Text>Move fast - hold shift down</Text>
                     <Text>Grid show/hide - g</Text>
+                    <Text>Change view - 1, 2, 3</Text>
+                    <Text>Select layer 0 - ctrl up</Text>
+                    <Text>Select layer 1 - hold ctrl down</Text>
+                    <Text>Draw - Left click</Text>
+                    <Text>Erase - right click</Text>
                 </VStack>
             </Flex>
 
