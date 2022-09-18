@@ -20,8 +20,6 @@ const Index = () => {
     const canvas: MutableRefObject<HTMLCanvasElement> = useRef<HTMLCanvasElement>(null)
     const frame: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
 
-    const [is_view, setView] = useState<number>(1)
-
     useEffect(() => {
         const game: MapEditor = new MapEditor(canvas.current, frame.current)
 
@@ -67,10 +65,11 @@ const Index = () => {
                         fontWeight="600"
                     >
                         <Flex
+                            id="v_1"
                             w="20px"
                             h="20px"
-                            bgColor={ is_view == 1 ? "black" : "white" }
-                            color={ is_view == 1 ? "white" : "black" }
+                            bgColor="white"
+                            color="black"
                             alignItems="center"
                             justifyContent="center"
                             rounded="full"
@@ -79,10 +78,11 @@ const Index = () => {
                         </Flex>
 
                         <Flex
+                            id="v_2"
                             w="20px"
                             h="20px"
-                            bgColor={ is_view == 2 ? "black" : "white" }
-                            color={ is_view == 2 ? "white" : "black" }
+                            bgColor="white"
+                            color="black"
                             alignItems="center"
                             justifyContent="center"
                             rounded="full"
@@ -91,10 +91,11 @@ const Index = () => {
                         </Flex>
 
                         <Flex
+                            id="v_3"
                             w="20px"
                             h="20px"
-                            bgColor={ is_view == 3 ? "black" : "white" }
-                            color={ is_view == 3 ? "white" : "black" }
+                            bgColor="white"
+                            color="black"
                             alignItems="center"
                             justifyContent="center"
                             rounded="full"

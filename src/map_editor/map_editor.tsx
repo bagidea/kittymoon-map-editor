@@ -64,6 +64,7 @@ class MapEditor extends CoreEngine {
     private blockXYs: Map<number, BlockXY>
 
     private view_mode: string
+    private view_stetes: Map<string, HTMLElement>
 
     constructor(canvas: HTMLCanvasElement, frame: HTMLDivElement) {
         super(canvas)
@@ -99,6 +100,13 @@ class MapEditor extends CoreEngine {
         this.blockXYs = new Map<number, BlockXY>()
 
         this.view_mode = "all"
+
+        this.view_stetes = new Map<string, HTMLElement>()
+        this.view_stetes.set("v_1", document.getElementById("v_1"))
+        this.view_stetes.set("v_2", document.getElementById("v_2"))
+        this.view_stetes.set("v_3", document.getElementById("v_3"))
+
+        this.setViewState("v_1", true)
     }
 
     onWindowResize = () => {
@@ -410,6 +418,11 @@ class MapEditor extends CoreEngine {
         (this.floorBlocks.get(layer).material as MeshBasicMaterial).opacity = value
     }
 
+    setViewState(view: string, enabled: boolean) {
+        this.view_stetes.get(view).style.backgroundColor = enabled ? "black" : "white"
+        this.view_stetes.get(view).style.color = enabled ? "white" : "black"
+    }
+
     keydown = (e: KeyboardEvent) => {
         switch(e.code) {
             case "ArrowUp":
@@ -437,16 +450,25 @@ class MapEditor extends CoreEngine {
                 this.view_mode = "all";
                 this.setMaterialOpacity(0, 1.0)
                 this.setMaterialOpacity(1, 1.0)
+                this.setViewState("v_1", true)
+                this.setViewState("v_2", false)
+                this.setViewState("v_3", false)
                 break
             case "Digit2":
                 this.view_mode = "layer0";
                 this.setMaterialOpacity(0, 1.0)
                 this.setMaterialOpacity(1, 0.5)
+                this.setViewState("v_1", false)
+                this.setViewState("v_2", true)
+                this.setViewState("v_3", false)
                 break
             case "Digit3":
                 this.view_mode = "layer1";
                 this.setMaterialOpacity(0, 0.5)
                 this.setMaterialOpacity(1, 1.0)
+                this.setViewState("v_1", false)
+                this.setViewState("v_2", false)
+                this.setViewState("v_3", true)
                 break
         }
     }
