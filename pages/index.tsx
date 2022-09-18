@@ -61,7 +61,7 @@ const Index = () => {
                     <Text>Change view - 1, 2, 3</Text>
                     <Text>Select layer 0 - ctrl up</Text>
                     <Text>Select layer 1 - hold ctrl down</Text>
-                    <Text>Draw - Left click</Text>
+                    <Text>Draw - left click</Text>
                     <Text>Erase - right click</Text>
                 </VStack>
             </Flex>
