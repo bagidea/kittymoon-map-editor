@@ -4,13 +4,15 @@ import {
     HStack,
     Image,
     Text,
+    useBoolean,
     VStack
 } from "@chakra-ui/react"
 
 import {
     MutableRefObject,
     useEffect,
-    useRef
+    useRef,
+    useState
 } from "react"
 
 import MapEditor from "../src/map_editor/map_editor"
@@ -30,6 +32,9 @@ const Index = () => {
     const frame: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
     const stats: MutableRefObject<HTMLDivElement> = useRef<HTMLDivElement>(null)
 
+    const [is_open_menu, setOpenMenu] = useBoolean(false)
+    const [is_mode, setMode] = useState<string>("land")
+
     useEffect(() => {
         const game: MapEditor = new MapEditor(canvas.current, frame.current, stats.current)
 
@@ -40,7 +45,7 @@ const Index = () => {
         game.render()
 
         document.addEventListener('contextmenu', (e: MouseEvent) => e.preventDefault())
-    })
+    }, [])
 
     return (
         <Flex
@@ -145,6 +150,131 @@ const Index = () => {
                         fontWeight="600"
                         textShadow="1px 1px 2px #909090"
                     >version 1.0.0</Text>
+                </VStack>
+            </Flex>
+
+            <Flex
+                position="absolute"
+                top="170px"
+                left={ is_open_menu ? "0px" : "-190px" }
+                alignItems="center"
+                zIndex="5"
+                transition="left 0.6s"
+            >
+                <Flex
+                    position="absolute"
+                    w="100px"
+                    left="150px"
+                    bgColor="white"
+                    roundedTop="10px"
+                    alignItems="center"
+                    justifyContent="center"
+                    transform="rotate(90deg)"
+                    cursor="pointer"
+
+                    onClick={ setOpenMenu.toggle }
+                >
+                    <Text
+                        fontWeight="800"
+                        color="rgb(150, 150, 255)"
+                    >MENU</Text>
+                </Flex>
+
+                <VStack
+                    spacing="15px"
+                    alignItems="start"
+                >
+                    <Flex
+                        w="180px"
+                        h="50px"
+                        pl="15px"
+                        bgColor={ is_mode == "land" ? "rgba(50, 50, 200, 0.5)" : "" }
+                        border="2px solid"
+                        borderColor="white"
+                        borderLeft="0px"
+                        backdropFilter="blur(5px)"
+                        alignItems="center"
+                        cursor="pointer"
+                        roundedRight="5px"
+
+                        onClick={ () => { setMode("land") } }
+                    >
+                        <Text
+                            fontSize="24px"
+                            fontWeight="800"
+                            color="white"
+                            textShadow="2px 2px 2px black"
+                        >Land editor</Text>
+                    </Flex>
+
+                    <Flex
+                        w="180px"
+                        h="50px"
+                        pl="15px"
+                        bgColor={ is_mode == "objects" ? "rgba(50, 50, 200, 0.5)" : "" }
+                        border="2px solid"
+                        borderColor="white"
+                        borderLeft="0px"
+                        backdropFilter="blur(5px)"
+                        alignItems="center"
+                        cursor="pointer"
+                        roundedRight="5px"
+
+                        onClick={ () => { setMode("objects") } }
+                    >
+                        <Text
+                            fontSize="24px"
+                            fontWeight="800"
+                            color="white"
+                            textShadow="2px 2px 2px black"
+                        >Objects</Text>
+                    </Flex>
+
+                    <Flex
+                        w="180px"
+                        h="50px"
+                        pl="15px"
+                        bgColor={ is_mode == "houses" ? "rgba(50, 50, 200, 0.5)" : "" }
+                        border="2px solid"
+                        borderColor="white"
+                        borderLeft="0px"
+                        backdropFilter="blur(5px)"
+                        alignItems="center"
+                        cursor="pointer"
+                        roundedRight="5px"
+
+                        onClick={ () => { setMode("houses") } }
+                    >
+                        <Text
+                            fontSize="24px"
+                            fontWeight="800"
+                            color="white"
+                            textShadow="2px 2px 2px black"
+                        >Houses</Text>
+                    </Flex>
+
+                    <Flex
+                        w="180px"
+                        h="50px"
+                        pl="15px"
+                        bgColor={ is_mode == "collision" ? "rgba(50, 50, 200, 0.5)" : "" }
+                        border="2px solid"
+                        borderColor="white"
+                        borderLeft="0px"
+                        backdropFilter="blur(5px)"
+                        alignItems="center"
+                        cursor="pointer"
+                        roundedRight="5px"
+                        
+                        onClick={ () => { setMode("collision") } }
+                    >
+                        <Text
+                            fontSize="24px"
+                            fontWeight="800"
+                            color="white"
+                            textShadow="2px 2px 2px black"
+                        >Collisions</Text>
+                    </Flex>
                 </VStack>
             </Flex>
 
