@@ -68,6 +68,7 @@ const Index = () => {
                             fontSize="22px"
                             fontWeight="600"
                             textShadow="1px 1px 2px #909090"
+                            color="white"
                         >View :</Text>
                     </Flex>
 
@@ -121,6 +122,7 @@ const Index = () => {
             >
                 <VStack
                     spacing="0px"
+                    color="white"
                 >
                     <Flex
                         h="70px"

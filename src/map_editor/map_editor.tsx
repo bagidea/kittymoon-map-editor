@@ -177,6 +177,7 @@ class MapEditor extends CoreEngine {
         this.text_pos = document.createElement('div')
         this.text_pos.style.fontSize = "14px"
         this.text_pos.style.fontWeight = "600"
+        this.text_pos.style.color = "white"
         this.text_pos.textContent = "X: 0, Y: 0"
 
         this.textPosition = new CSS2DObject(this.text_pos)
